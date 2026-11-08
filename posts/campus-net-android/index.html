@@ -1,0 +1,356 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>校园网助手：Android 校园网自动认证与双网检测 | Xur0n 的博客</title><meta name="author" content="Xur0n"><meta name="copyright" content="Xur0n"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F7F8FA"><meta name="description" content="面向 Android 12 及以上设备的校园网助手，支持自动认证、断联回连、楼宇漫游识别与 Wi-Fi &#x2F; 移动数据双网质量检测。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="校园网助手：Android 校园网自动认证与双网检测">
+<meta property="og:url" content="https://wangchengxu8661.github.io/posts/campus-net-android/">
+<meta property="og:site_name" content="Xur0n 的博客">
+<meta property="og:description" content="面向 Android 12 及以上设备的校园网助手，支持自动认证、断联回连、楼宇漫游识别与 Wi-Fi &#x2F; 移动数据双网质量检测。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wangchengxu8661.github.io/img/profile-256.webp">
+<meta property="article:published_time" content="2026-10-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-19T16:00:00.000Z">
+<meta property="article:author" content="Xur0n">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="校园网">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wangchengxu8661.github.io/img/profile-256.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "校园网助手：Android 校园网自动认证与双网检测",
+  "url": "https://wangchengxu8661.github.io/posts/campus-net-android/",
+  "image": "https://wangchengxu8661.github.io/img/profile-256.webp",
+  "datePublished": "2026-10-19T16:00:00.000Z",
+  "dateModified": "2026-10-19T16:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xur0n",
+      "url": "https://wangchengxu8661.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/profile-favicon.png"><link rel="canonical" href="https://wangchengxu8661.github.io/posts/campus-net-android/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css?v=8c636132cb70"><link rel="stylesheet" href="/assets/fontawesome/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        const data = { value }
+
+        if (ttl != null) {
+          data.expiry = Date.now() + ttl * 86400000
+        }
+
+        localStorage.setItem(key, JSON.stringify(data))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js?v=4.13.0',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '校园网助手：Android 校园网自动认证与双网检测',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css?v=7382ee52f75e"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="bg-animation" id="web_bg" style="background-color: #F7F8FA;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/profile-256.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/ctf/"><span> CTF</span></a></div><div class="menus_item"><a class="site-page" href="/categories/pentest/"><span> 渗透</span></a></div><div class="menus_item"><a class="site-page" href="/categories/project/"><span> Project</span></a></div><div class="menus_item"><a class="site-page" href="/categories/study/"><span> study</span></a></div><div class="menus_item"><a class="site-page" href="/categories/essay/"><span> Essay</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><span> 工具</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/hero-5e68377666bd.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Xur0n 的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">校园网助手：Android 校园网自动认证与双网检测</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/ctf/"><span> CTF</span></a></div><div class="menus_item"><a class="site-page" href="/categories/pentest/"><span> 渗透</span></a></div><div class="menus_item"><a class="site-page" href="/categories/project/"><span> Project</span></a></div><div class="menus_item"><a class="site-page" href="/categories/study/"><span> study</span></a></div><div class="menus_item"><a class="site-page" href="/categories/essay/"><span> Essay</span></a></div><div class="menus_item"><a class="site-page" href="/tools/"><span> 工具</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">校园网助手：Android 校园网自动认证与双网检测</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-19T16:00:00.000Z" title="发表于 2026-10-20 00:00:00">2026-10-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-19T16:00:00.000Z" title="更新于 2026-10-20 00:00:00">2026-10-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/project/">Project</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="应用下载"><a href="#应用下载" class="headerlink" title="应用下载"></a>应用下载</h2><p><a href="/downloads/CampusNet-1.3.0-DualNetwork.apk">下载校园网助手 v1.3.0（Android APK）</a></p>
+<p>安装包：CampusNet-1.3.0-DualNetwork.apk，约 70 KB。需要 Android 12 及以上系统，优先适配 Xiaomi 15 &#x2F; Xiaomi HyperOS。当前认证接口针对本校校园网配置，其他学校需调整接口后使用。</p>
+<h2 id="一、项目概述"><a href="#一、项目概述" class="headerlink" title="一、项目概述"></a>一、项目概述</h2><p>校园网助手是一款面向 Android 设备的轻量级校园网络管理应用，主要解决校园网需要频繁进行门户认证、跨教学楼后容易掉线、网络质量不稳定以及 Wi-Fi 与移动数据状态难以判断等问题。</p>
+<p>应用根据学校现有的 Dr.COM&#x2F;ePortal 登录接口完成认证，并通过 Android 系统网络回调实时感知 Wi-Fi 连接、IP 地址、默认网关及网络验证状态。当用户从一栋教学楼移动到另一栋教学楼，或设备重新连接校园 Wi-Fi 时，应用能够快速判断网络环境是否发生变化，并在需要时自动重新登录。</p>
+<p>当前版本为 <strong>v1.3.0</strong>，优先适配 Xiaomi 15 与 Xiaomi HyperOS，同时兼容 Android 12 及以上系统。</p>
+<h2 id="二、项目背景"><a href="#二、项目背景" class="headerlink" title="二、项目背景"></a>二、项目背景</h2><p>校园网络在实际使用中可能存在以下问题：</p>
+<ol>
+<li>连接校园 Wi-Fi 后仍需手动打开认证页面登录。</li>
+<li>从 A 教学楼移动到 B 教学楼时，设备虽然仍显示连接 Wi-Fi，但 IP、子网、网关或认证状态已经发生变化。</li>
+<li>部分接入点信号弱、丢包率高，网页长时间无法打开。</li>
+<li>用户无法直观比较校园 Wi-Fi 与移动数据的网络质量。</li>
+<li>普通定时轮询工具耗电较高，并且可能频繁请求学校认证服务器。</li>
+</ol>
+<p>本项目通过事件驱动的网络监听、低频健康检查和指数退避重试机制，在可靠回连与低功耗之间取得平衡。</p>
+<h2 id="三、主要功能"><a href="#三、主要功能" class="headerlink" title="三、主要功能"></a>三、主要功能</h2><h3 id="1-校园网认证"><a href="#1-校园网认证" class="headerlink" title="1. 校园网认证"></a>1. 校园网认证</h3><ul>
+<li>根据指定的 ePortal GET 接口自动构造登录请求。</li>
+<li>自动读取当前 Wi-Fi 的 IPv4 地址和默认网关。</li>
+<li>支持手动立即登录和后台自动登录。</li>
+<li>不在日志、通知或界面状态中输出账号密码及完整登录 URL。</li>
+</ul>
+<h3 id="2-断联自动回连"><a href="#2-断联自动回连" class="headerlink" title="2. 断联自动回连"></a>2. 断联自动回连</h3><ul>
+<li>监听 Wi-Fi 接入、断开和网络能力变化。</li>
+<li>网络验证失效或出现认证门户时进行快速连通性检查。</li>
+<li>认证失败后采用指数退避策略重试：从 5 秒开始，最长等待 5 分钟。</li>
+<li>避免网络故障或密码错误时高频访问认证服务器。</li>
+</ul>
+<h3 id="3-楼宇漫游优化"><a href="#3-楼宇漫游优化" class="headerlink" title="3. 楼宇漫游优化"></a>3. 楼宇漫游优化</h3><ul>
+<li>识别 Wi-Fi 网络对象重新建立。</li>
+<li>检测 DHCP IPv4、子网、接口和默认网关变化。</li>
+<li>跨教学楼或接入点切换后快速重新认证。</li>
+<li>对系统暂时保留旧网络验证状态的情况设置短时强制认证窗口。</li>
+</ul>
+<h3 id="4-双网检测与质量评估"><a href="#4-双网检测与质量评估" class="headerlink" title="4. 双网检测与质量评估"></a>4. 双网检测与质量评估</h3><ul>
+<li>同时显示 Wi-Fi 和移动数据的网络状态。</li>
+<li>展示 IP 地址、网关、DNS、网络接口、计费状态、验证状态及链路能力。</li>
+<li>按需临时唤起移动数据链路。</li>
+<li>Wi-Fi 与移动数据并行执行延迟和下载测试。</li>
+<li>每条链路最多读取约 1 MB 测速数据，减少移动流量消耗。</li>
+<li>根据连通性、延迟和下载速度计算质量分数并给出使用建议。</li>
+</ul>
+<h3 id="5-网络测速"><a href="#5-网络测速" class="headerlink" title="5. 网络测速"></a>5. 网络测速</h3><ul>
+<li>测量校园网门户访问延迟。</li>
+<li>支持自定义 HTTPS 测速文件地址。</li>
+<li>测速仅在用户主动点击后执行，不在后台消耗大量流量。</li>
+</ul>
+<h3 id="6-隐身通知模式"><a href="#6-隐身通知模式" class="headerlink" title="6. 隐身通知模式"></a>6. 隐身通知模式</h3><ul>
+<li>Android 13 及以上系统不主动申请普通通知权限。</li>
+<li>前台服务记录不会出现在普通通知栏，只保留在系统运行管理入口。</li>
+<li>通知没有点击跳转和操作按钮，避免误触打开应用。</li>
+<li>Android 12 按系统要求保留静默、低优先级且不可点击的前台服务通知。</li>
+</ul>
+<h3 id="7-开机恢复"><a href="#7-开机恢复" class="headerlink" title="7. 开机恢复"></a>7. 开机恢复</h3><ul>
+<li>用户开启自动回连后，手机重启或应用更新完成时恢复网络守护。</li>
+<li>用户关闭自动回连后不会自行启动服务。</li>
+</ul>
+<h2 id="四、技术架构"><a href="#四、技术架构" class="headerlink" title="四、技术架构"></a>四、技术架构</h2><p>项目使用原生 Java 和 Android 平台 API 开发，不依赖第三方运行框架。</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>主要职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MainActivity</code></td>
+<td>设置界面、网络信息展示、测速操作和系统设置入口</td>
+</tr>
+<tr>
+<td><code>ReconnectService</code></td>
+<td>前台网络守护、断联检测、漫游识别和自动重试</td>
+</tr>
+<tr>
+<td><code>LoginClient</code></td>
+<td>构造并发送校园网认证请求、检查互联网连通性</td>
+</tr>
+<tr>
+<td><code>NetworkInspector</code></td>
+<td>获取 Wi-Fi、移动数据、IP、网关、DNS 和链路能力</td>
+</tr>
+<tr>
+<td><code>DualNetworkTester</code></td>
+<td>并行测试 Wi-Fi 与移动数据并计算质量评分</td>
+</tr>
+<tr>
+<td><code>SpeedTest</code></td>
+<td>单网络延迟与下载速度测试</td>
+</tr>
+<tr>
+<td><code>CredentialStore</code></td>
+<td>使用 Android Keystore 加密保存账号密码</td>
+</tr>
+<tr>
+<td><code>BootReceiver</code></td>
+<td>手机重启或应用更新后的服务恢复</td>
+</tr>
+<tr>
+<td><code>AppPrefs</code></td>
+<td>保存非敏感设置和运行状态</td>
+</tr>
+</tbody></table>
+<h2 id="五、核心流程"><a href="#五、核心流程" class="headerlink" title="五、核心流程"></a>五、核心流程</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">连接校园 Wi-Fi</span><br><span class="line">       │</span><br><span class="line">       ▼</span><br><span class="line">系统 NetworkCallback 通知应用</span><br><span class="line">       │</span><br><span class="line">       ├── 网络已验证 ──► 保持监听</span><br><span class="line">       │</span><br><span class="line">       ├── 出现认证门户 ──► 连通性探测 ──► 自动登录</span><br><span class="line">       │</span><br><span class="line">       └── IP/网关/网络对象变化 ──► 判定楼宇漫游 ──► 快速重新认证</span><br><span class="line">                                      │</span><br><span class="line">                                      ▼</span><br><span class="line">                              失败时指数退避重试</span><br></pre></td></tr></table></figure>
+
+<h2 id="六、低功耗设计"><a href="#六、低功耗设计" class="headerlink" title="六、低功耗设计"></a>六、低功耗设计</h2><ul>
+<li>使用 <code>ConnectivityManager.NetworkCallback</code> 接收网络变化事件，避免持续高频轮询。</li>
+<li>默认仅按分钟级间隔进行轻量联网检查。</li>
+<li>所有阻塞网络请求均在后台单线程中执行。</li>
+<li>双网测速和移动链路请求仅由用户主动触发。</li>
+<li>测试结束后立即释放移动网络请求。</li>
+<li>无 Compose、WebView、数据库和第三方网络库，降低安装包和运行内存占用。</li>
+</ul>
+<h2 id="七、安全与隐私"><a href="#七、安全与隐私" class="headerlink" title="七、安全与隐私"></a>七、安全与隐私</h2><h3 id="本地凭据保护"><a href="#本地凭据保护" class="headerlink" title="本地凭据保护"></a>本地凭据保护</h3><p>账号和密码使用 Android Keystore 生成的 AES-GCM 密钥加密，SharedPreferences 中只保存密文和随机初始化向量。应用备份与设备迁移规则会排除所有私有数据，避免无法迁移的密文或敏感配置进入云备份。</p>
+<h3 id="网络安全限制"><a href="#网络安全限制" class="headerlink" title="网络安全限制"></a>网络安全限制</h3><p>学校认证服务器使用 HTTP，因此账号密码在校园网络中的传输无法获得 TLS 加密保护。应用通过 Network Security Configuration 仅允许向 <code>172.16.253.3</code> 发起明文 HTTP 请求，其他地址默认禁止明文通信。</p>
+<h3 id="权限控制"><a href="#权限控制" class="headerlink" title="权限控制"></a>权限控制</h3><p>应用仅使用以下必要权限：</p>
+<ul>
+<li><code>INTERNET</code>：访问校园认证服务器及测速地址。</li>
+<li><code>ACCESS_NETWORK_STATE</code>：读取网络连接和验证状态。</li>
+<li><code>CHANGE_NETWORK_STATE</code>：在用户执行双网测试时临时请求移动数据链路。</li>
+<li><code>FOREGROUND_SERVICE</code>：维持用户明确开启的自动回连服务。</li>
+<li><code>FOREGROUND_SERVICE_SPECIAL_USE</code>：声明持续校园网认证守护用途。</li>
+<li><code>RECEIVE_BOOT_COMPLETED</code>：在用户已启用自动回连时恢复服务。</li>
+</ul>
+<p>应用不申请定位、通讯录、短信、存储、电话状态或真实硬件 MAC 权限。</p>
+<h2 id="八、网络优化能力边界"><a href="#八、网络优化能力边界" class="headerlink" title="八、网络优化能力边界"></a>八、网络优化能力边界</h2><p>Android 普通应用只能为自身的网络连接选择 Wi-Fi 或移动数据，不能直接替浏览器、微信等其他应用修改系统路由。因此，当前版本的双网功能用于并行检测、评分和推荐，不会宣称已经替全手机完成网络切换。</p>
+<p>真正实现全手机 Wi-Fi 与移动数据自动分流，需要使用 Android <code>VpnService</code>。如果希望把同一个下载或连接的带宽进行叠加，还需要公网中继服务器负责重组流量。这种方案会带来 VPN 系统标识、服务器费用、额外延迟、移动流量消耗和更高的隐私责任，因此不包含在当前轻量版本中。</p>
+<p>对于校园内个别网络质量较差的楼宇，应用提供小米 WLAN 设置入口。用户可以根据机型支持情况尝试开启：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">设置 → WLAN → 网络加速 → 智能多网络加速 / 双 WLAN 加速</span><br></pre></td></tr></table></figure>
+
+<h2 id="九、兼容性"><a href="#九、兼容性" class="headerlink" title="九、兼容性"></a>九、兼容性</h2><ul>
+<li>最低系统：Android 12，API 31。</li>
+<li>目标系统：Android 16，API 36。</li>
+<li>优先测试机型：Xiaomi 15、Xiaomi HyperOS。</li>
+<li>使用原生 Android API，能够兼容大部分 Android 12 及以上品牌设备。</li>
+<li>Android 17 设备可以兼容运行；项目暂不将目标版本提升至 API 37，以避免校园局域网访问额外要求运行时权限。</li>
+</ul>
+<h2 id="十、构建与运行"><a href="#十、构建与运行" class="headerlink" title="十、构建与运行"></a>十、构建与运行</h2><h3 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h3><ul>
+<li>Android Studio</li>
+<li>JDK 17 或更高版本</li>
+<li>Android SDK 36</li>
+<li>Gradle Wrapper 已包含在项目中</li>
+</ul>
+<h3 id="构建步骤"><a href="#构建步骤" class="headerlink" title="构建步骤"></a>构建步骤</h3><ol>
+<li>使用 Android Studio 打开项目根目录。</li>
+<li>等待 Gradle 同步完成。</li>
+<li>选择 <code>app</code> 配置并连接 Android 设备。</li>
+<li>点击运行，或在命令行执行：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew assembleDebug</span><br></pre></td></tr></table></figure>
+
+<p>Windows 环境可以执行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\gradlew.bat assembleDebug</span><br></pre></td></tr></table></figure>
+
+<p>生成的 APK 位于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app/build/outputs/apk/debug/app-debug.apk</span><br></pre></td></tr></table></figure>
+
+<h2 id="十一、使用方法"><a href="#十一、使用方法" class="headerlink" title="十一、使用方法"></a>十一、使用方法</h2><ol>
+<li>将手机连接到校园 Wi-Fi。</li>
+<li>打开应用并填写完整校园网账号和密码。</li>
+<li>开启“断联自动回连”并保存设置。</li>
+<li>首次使用可点击“立即登录”确认认证接口正常。</li>
+<li>网络较差时使用“双网并行测速并推荐”比较 Wi-Fi 和移动数据。</li>
+<li>根据推荐结果手动切换网络，或进入 Xiaomi HyperOS 网络加速设置。</li>
+</ol>
+<h2 id="十二、后续规划"><a href="#十二、后续规划" class="headerlink" title="十二、后续规划"></a>十二、后续规划</h2><ul>
+<li>增加可导出的脱敏网络诊断报告。</li>
+<li>记录不同教学楼或网关的历史网络质量。</li>
+<li>根据连续丢包而不仅是单次请求判断网络状态。</li>
+<li>支持用户配置多个校园认证地址。</li>
+<li>增加可选的通知显示模式。</li>
+<li>在具备可信公网中继服务器的前提下，评估 VPN 智能分流版本。</li>
+</ul>
+<h2 id="十三、项目总结"><a href="#十三、项目总结" class="headerlink" title="十三、项目总结"></a>十三、项目总结</h2><p>校园网助手以“小体积、低功耗、自动恢复、安全保存凭据”为设计目标，重点解决校园门户认证和跨楼宇漫游导致的断网问题。项目充分利用 Android 原生网络回调和多网络 API，在不获取高风险权限、不常驻高频轮询、不依赖第三方服务的前提下，为校园网络提供自动认证、状态诊断和双网质量评估能力。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="/">Xur0n</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://wangchengxu8661.github.io/posts/campus-net-android/">https://wangchengxu8661.github.io/posts/campus-net-android/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://wangchengxu8661.github.io" target="_blank">Xur0n 的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Android/">Android</a><a class="post-meta__tags" href="/tags/%E6%A0%A1%E5%9B%AD%E7%BD%91/">校园网</a><a class="post-meta__tags" href="/tags/Java/">Java</a></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/18e0b59a6d94edec/" title="接触 CTF 一周年：关于 AI、比赛和自己的一些反思"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">接触 CTF 一周年：关于 AI、比赛和自己的一些反思</div></div><div class="info-2"><div class="info-item-1">前言一载攻防知浅处， 几番胜负见初心。  恰逢 2026 年新生赛，距离我第一次接触 CTF，已经过去一年了。 这一年里，陆陆续续参加了不少比赛，线上线下都有。黄鹤杯、2025 国赛、软件系统安全赛、2026 安徽省赛……比赛打了不少，成绩只能说一般，技术水平也远没有达到自己的预期。 说起来，一年前刚接触 CTF...</div></div></div></a><a class="pagination-related" href="/posts/software-security-2026-system/" title="2026软件系统安全赛 · 系统攻击 WP"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">2026软件系统安全赛 · 系统攻击 WP</div></div><div class="info-2"><div class="info-item-1">2026软件系统安全赛系统攻击解题记录，梳理 RSA 弱密钥、门限共享、连分数攻击与信息泄露分析。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/profile-256.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Xur0n</div><div class="author-info-description">一半求知，一半记录，余下的交给时间。</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">将昨日的疑问整理成页，等明日的自己来翻。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E4%B8%8B%E8%BD%BD"><span class="toc-text">应用下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%BF%B0"><span class="toc-text">一、项目概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF"><span class="toc-text">二、项目背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="toc-text">三、主要功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%A1%E5%9B%AD%E7%BD%91%E8%AE%A4%E8%AF%81"><span class="toc-text">1. 校园网认证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%96%AD%E8%81%94%E8%87%AA%E5%8A%A8%E5%9B%9E%E8%BF%9E"><span class="toc-text">2. 断联自动回连</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%A5%BC%E5%AE%87%E6%BC%AB%E6%B8%B8%E4%BC%98%E5%8C%96"><span class="toc-text">3. 楼宇漫游优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%8F%8C%E7%BD%91%E6%A3%80%E6%B5%8B%E4%B8%8E%E8%B4%A8%E9%87%8F%E8%AF%84%E4%BC%B0"><span class="toc-text">4. 双网检测与质量评估</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%BD%91%E7%BB%9C%E6%B5%8B%E9%80%9F"><span class="toc-text">5. 网络测速</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E9%9A%90%E8%BA%AB%E9%80%9A%E7%9F%A5%E6%A8%A1%E5%BC%8F"><span class="toc-text">6. 隐身通知模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%BC%80%E6%9C%BA%E6%81%A2%E5%A4%8D"><span class="toc-text">7. 开机恢复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84"><span class="toc-text">四、技术架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B"><span class="toc-text">五、核心流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1"><span class="toc-text">六、低功耗设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%AE%89%E5%85%A8%E4%B8%8E%E9%9A%90%E7%A7%81"><span class="toc-text">七、安全与隐私</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%87%AD%E6%8D%AE%E4%BF%9D%E6%8A%A4"><span class="toc-text">本地凭据保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E9%99%90%E5%88%B6"><span class="toc-text">网络安全限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6"><span class="toc-text">权限控制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E7%BD%91%E7%BB%9C%E4%BC%98%E5%8C%96%E8%83%BD%E5%8A%9B%E8%BE%B9%E7%95%8C"><span class="toc-text">八、网络优化能力边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="toc-text">九、兼容性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E6%9E%84%E5%BB%BA%E4%B8%8E%E8%BF%90%E8%A1%8C"><span class="toc-text">十、构建与运行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82"><span class="toc-text">环境要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E6%AD%A5%E9%AA%A4"><span class="toc-text">构建步骤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-text">十一、使用方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E5%90%8E%E7%BB%AD%E8%A7%84%E5%88%92"><span class="toc-text">十二、后续规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93"><span class="toc-text">十三、项目总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18e0b59a6d94edec/" title="接触 CTF 一周年：关于 AI、比赛和自己的一些反思">接触 CTF 一周年：关于 AI、比赛和自己的一些反思</a><time datetime="2026-10-31T16:00:00.000Z" title="发表于 2026-11-01 00:00:00">2026-11-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/campus-net-android/" title="校园网助手：Android 校园网自动认证与双网检测">校园网助手：Android 校园网自动认证与双网检测</a><time datetime="2026-10-19T16:00:00.000Z" title="发表于 2026-10-20 00:00:00">2026-10-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/software-security-2026-misc/" title="2026软件系统安全赛 · Misc WP">2026软件系统安全赛 · Misc WP</a><time datetime="2026-04-21T00:00:00.000Z" title="发表于 2026-04-21 08:00:00">2026-04-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/software-security-2026-system/" title="2026软件系统安全赛 · 系统攻击 WP">2026软件系统安全赛 · 系统攻击 WP</a><time datetime="2026-04-21T00:00:00.000Z" title="发表于 2026-04-21 08:00:00">2026-04-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/374e53a4a2ca4386/" title="Time">Time</a><time datetime="2026-03-26T15:37:39.000Z" title="发表于 2026-03-26 23:37:39">2026-03-26</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2026 By Xur0n</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div><div class="footer_custom_text">记录，慢慢来。</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.0"></script><script src="/js/main.js?v=5.7.0"></script><div class="js-pjax"></div><script src="/js/accessibility.js?v=2320e2828869" defer></script></div></body></html>

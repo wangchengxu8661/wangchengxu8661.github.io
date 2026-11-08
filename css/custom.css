@@ -1,0 +1,127 @@
+/* Preserve Butterfly's native header, post cards, sidebar and article layout. */
+:root { --accent: #52758b; --line: #e2e7ea; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  background:
+    radial-gradient(ellipse at 0 35%, rgba(154, 195, 216, .14), transparent 55%),
+    radial-gradient(ellipse at 100% 75%, rgba(183, 202, 218, .18), transparent 50%),
+    #f7f8fa;
+}
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 4px;
+}
+#page-header { background-color: #83a9bd; }
+#page-header.full_page { background-attachment: scroll; }
+#page-header.full_page::before {
+  position: absolute; inset: 0; content: "";
+  background: rgba(14, 17, 32, .18);
+}
+#page-header.full_page #site-title,
+#page-header.full_page #site-subtitle { text-shadow: 0 2px 8px rgba(0, 0, 0, .65); }
+#page-header #site-title { letter-spacing: 1px; }
+#page-header #site-subtitle { margin-top: 12px; font-size: 1.2em; }
+#recent-posts .recent-post-item, #aside-content .card-widget,
+.layout > #post, .layout > #page, .layout > #archive,
+.layout > #category, .layout > #tag {
+  border: 1px solid transparent;
+  border-radius: 18px;
+  /* Layered glass rim keeps large reading surfaces sharp without costly live blur. */
+  background:
+    linear-gradient(135deg, #ffffff 0%, #fbfdfe 65%, #f7fafc 100%) padding-box,
+    linear-gradient(135deg, #ffffff 0%, #d0e2ed 26%, #ffffff 48%, #bfd3e0 78%, #ffffff 100%) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .98),
+    inset 1px 0 0 rgba(255, 255, 255, .75),
+    inset -1px -1px 2px rgba(133, 169, 193, .16),
+    0 2px 4px rgba(69, 102, 124, .035),
+    0 12px 32px -12px rgba(69, 102, 124, .2),
+    0 0 0 4px rgba(255, 255, 255, .35);
+}
+#article-container { overflow-wrap: break-word; }
+/* Article attribution card, using Butterfly's built-in copyright content. */
+#post .post-copyright {
+  margin: 36px 0 20px;
+  padding: 18px 42px 18px 22px;
+  border: 1px solid #a9bac5;
+  border-radius: 9px;
+  background: var(--card-bg, #fff);
+  box-shadow: 0 0 8px rgba(82, 117, 139, .2);
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+#post .post-copyright > div + div { margin-top: 5px; }
+#post .post-copyright::before { top: 12px; right: 15px; color: #49b1f5; }
+#post .post-copyright .post-copyright-meta { color: #1686bf; }
+#post .post-copyright .post-copyright-info { padding-left: 8px; }
+#post .post-copyright a { text-underline-offset: 3px; }
+#post .post-copyright:hover {
+  box-shadow: 0 0 12px rgba(82, 117, 139, .3);
+}
+[data-theme="dark"] #post .post-copyright {
+  border-color: #a5a5a5;
+  box-shadow: 0 0 8px rgba(255, 255, 255, .25);
+}
+[data-theme="dark"] #post .post-copyright .post-copyright-meta { color: #49b1f5; }
+#post .post-meta__tags { border-radius: 16px; }
+@media (max-width: 600px) {
+  #post .post-copyright { padding: 15px 32px 15px 15px; font-size: 14px; }
+}
+#article-container figure.highlight button.copy-button {
+  border: 0; background: transparent; color: inherit; cursor: pointer;
+}
+.pdf-attachment { margin: 24px 0; }
+.pdf-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+#article-container .pdf-actions a {
+  display: inline-block; padding: 10px 20px; border-radius: 6px;
+  background: #52758b; color: #fff; text-decoration: none;
+}
+#article-container .pdf-actions a:last-child { background: #edf2f5; color: #3d5d72; }
+#article-container .pdf-note { margin: 14px 0; font-size: 13px; color: #71808a; }
+/* Footer uses the actual Butterfly 5.7 footer children, not the old footer-wrap id. */
+#footer {
+  margin-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, .95);
+  background:
+    radial-gradient(ellipse at 18% 100%, rgba(145, 186, 210, .28), transparent 60%),
+    radial-gradient(ellipse at 85% 0, rgba(212, 226, 237, .65), transparent 55%),
+    linear-gradient(165deg, #edf3f7, #e3edf3 65%, #dce8ef);
+  box-shadow: inset 0 1px 0 rgba(166, 193, 210, .25);
+}
+#footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 15%;
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(111, 155, 182, .55), transparent);
+  pointer-events: none;
+}
+#footer .footer-other { padding: 38px 20px 32px; color: #425b6b; line-height: 1.9; }
+#footer .copyright { font-weight: 600; letter-spacing: .04em; }
+#footer .framework-info { margin-top: 4px; font-size: 13px; color: #526d7e; }
+#footer a { color: #385e76; text-underline-offset: 4px; }
+#footer a:hover { color: #174b6d; text-decoration: underline; }
+#footer .footer_custom_text { margin-top: 12px; color: #526d7e; font-size: 14px; letter-spacing: .1em; }
+[data-theme="dark"] body { background: #161d24; }
+[data-theme="dark"] #recent-posts .recent-post-item,
+[data-theme="dark"] #aside-content .card-widget,
+[data-theme="dark"] .layout > :is(#post, #page, #archive, #category, #tag) {
+  background:
+    linear-gradient(135deg, #242f39, #1d2730) padding-box,
+    linear-gradient(135deg, #6d8596, #303f4d 35%, #526d80 75%, #283845) border-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 12px 30px -12px rgba(0, 0, 0, .5);
+}
+[data-theme="dark"] #footer { background: linear-gradient(150deg, #233340, #192732); }
+[data-theme="dark"] #footer :is(.footer-other, .framework-info, .footer_custom_text, a) { color: #bccedb; }
+@media (max-width: 600px) {
+  .layout > :is(#post, #page, #archive, #category, #tag),
+  #recent-posts .recent-post-item, #aside-content .card-widget { border-radius: 12px; }
+  #footer { margin-top: 12px; }
+  #footer .footer-other { padding: 30px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important; transition: none !important; animation: none !important;
+  }
+}
