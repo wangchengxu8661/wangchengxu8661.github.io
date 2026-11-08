@@ -12,19 +12,19 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 }
 #page-header { background-color: #83a9bd; }
 #page-header.full_page { background-attachment: scroll; }
-#page-header.full_page::before {
+#page-header:not(.not-top-img)::before {
   position: absolute; inset: 0; z-index: 1; content: ""; pointer-events: none;
   background:
     linear-gradient(180deg, rgba(14, 17, 32, .58), transparent 110px),
     rgba(14, 17, 32, .18);
 }
-#page-header.full_page :is(#site-info, #scroll-down) { z-index: 2; }
-.home-hero-video {
+#page-header :is(#site-info, #scroll-down, #page-site-info, #post-info) { z-index: 2; }
+.hero-video {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; opacity: 0; pointer-events: none;
 }
-.home-hero-video.is-ready { opacity: 1; }
-.home-hero-toggle {
+.hero-video.is-ready { opacity: 1; }
+.hero-video-toggle {
   position: absolute; right: 16px; bottom: 16px; z-index: 3;
   min-height: 44px; padding: 0 12px; border: 1px solid #fff8; border-radius: 24px;
   color: #fff; background: #111827db; font: inherit; font-size: .8rem; cursor: pointer;
@@ -129,7 +129,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 [data-theme="dark"] #footer :is(.footer-other, .framework-info, .footer_custom_text, a) { color: #bccedb; }
 @media (max-width: 600px) {
   #page-header.full_page { background-position: 72% center; }
-  .home-hero-video { object-position: 72% center; }
+  #page-header.full_page .hero-video { object-position: 72% center; }
   .layout > :is(#post, #page, #archive, #category, #tag),
   #recent-posts .recent-post-item, #aside-content .card-widget { border-radius: 12px; }
   #footer { margin-top: 12px; }

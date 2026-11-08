@@ -1,19 +1,19 @@
 'use strict';
 
 function startHeroVideo() {
-  const header = document.querySelector('#page-header.full_page');
+  const header = document.querySelector('#page-header:not(.not-top-img)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (!header || reducedMotion.matches) return;
 
   const video = document.createElement('video');
-  video.className = 'home-hero-video';
+  video.className = 'hero-video';
   video.setAttribute('aria-hidden', 'true');
   video.muted = true;
   video.playsInline = true;
   video.loop = true;
 
   const toggle = document.createElement('button');
-  toggle.className = 'home-hero-toggle';
+  toggle.className = 'hero-video-toggle';
   toggle.type = 'button';
   toggle.hidden = true;
   toggle.textContent = '暂停背景';
@@ -46,7 +46,8 @@ function startHeroVideo() {
   header.prepend(video);
   header.append(toggle);
   const compactViewport = window.matchMedia('(max-width: 600px)').matches;
-  video.src = compactViewport ? '/img/hero-mika-mobile.mp4' : '/img/hero-mika.mp4';
+  const compactVideo = header.classList.contains('full_page') ? 'hero-mika-mobile.mp4' : 'hero-mika-compact.mp4';
+  video.src = '/img/' + (compactViewport ? compactVideo : 'hero-mika.mp4');
   play();
 }
 
