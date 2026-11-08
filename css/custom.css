@@ -24,11 +24,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   object-fit: cover; opacity: 0; pointer-events: none;
 }
 .hero-video.is-ready { opacity: 1; }
-.hero-video-toggle {
-  position: absolute; right: 16px; bottom: 16px; z-index: 3;
-  min-height: 44px; padding: 0 12px; border: 1px solid #fff8; border-radius: 24px;
-  color: #fff; background: #111827db; font: inherit; font-size: .8rem; cursor: pointer;
-}
 #page-header.full_page #site-title,
 #page-header.full_page #site-subtitle { text-shadow: 0 2px 8px rgba(0, 0, 0, .65); }
 #page-header #site-title { letter-spacing: 1px; }
