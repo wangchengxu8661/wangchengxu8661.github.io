@@ -14,7 +14,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 #page-header.full_page { background-attachment: scroll; }
 #page-header.full_page::before {
   position: absolute; inset: 0; z-index: 1; content: ""; pointer-events: none;
-  background: rgba(14, 17, 32, .18);
+  background:
+    linear-gradient(180deg, rgba(14, 17, 32, .58), transparent 110px),
+    rgba(14, 17, 32, .18);
 }
 #page-header.full_page :is(#site-info, #scroll-down) { z-index: 2; }
 .home-hero-video {

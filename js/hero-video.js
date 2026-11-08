@@ -45,7 +45,8 @@ function startHeroVideo() {
 
   header.prepend(video);
   header.append(toggle);
-  video.src = '/img/hero-wind.mp4';
+  const compactViewport = window.matchMedia('(max-width: 600px)').matches;
+  video.src = compactViewport ? '/img/hero-mika-mobile.mp4' : '/img/hero-mika.mp4';
   play();
 }
 
