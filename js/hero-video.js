@@ -5,6 +5,10 @@ function startHeroVideo() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (!header || reducedMotion.matches) return;
 
+  // Keep the static poster for data savers and slow connections; the video is decorative.
+  const connection = navigator.connection || {};
+  if (connection.saveData || /^(slow-2g|2g|3g)$/.test(connection.effectiveType || '')) return;
+
   const video = document.createElement('video');
   video.className = 'hero-video';
   video.setAttribute('aria-hidden', 'true');

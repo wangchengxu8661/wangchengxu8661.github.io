@@ -46,6 +46,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
     0 0 0 4px rgba(255, 255, 255, .35);
 }
 #article-container { overflow-wrap: break-word; }
+/* Intrinsic width/height attributes come from scripts/optimize-output.mjs; keep them fluid. */
+#article-container img[width][height] { height: auto; max-width: 100%; }
 /* Article attribution card, using Butterfly's built-in copyright content. */
 #post .post-copyright {
   margin: 36px 0 20px;
