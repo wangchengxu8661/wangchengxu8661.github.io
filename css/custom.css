@@ -139,6 +139,30 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
 #page-header #site-title { letter-spacing: 1px; }
 #page-header #site-subtitle { margin-top: 12px; font-size: 1.2em; }
 
+/* 首页开屏：标题与副标题托在一块玻璃胶囊上 */
+#page-header.full_page #site-info {
+  top: 50%;
+  left: 50%;
+  width: max-content;
+  min-width: min(520px, 86vw);
+  max-width: 92vw;
+  padding: 26px 40px 30px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 30px;
+  background:
+    linear-gradient(150deg, rgba(16, 28, 44, .34) 0%, rgba(16, 28, 44, .16) 54%, rgba(16, 28, 44, .3) 100%),
+    linear-gradient(150deg, rgba(255, 255, 255, .16) 0%, rgba(255, 255, 255, .04) 60%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .5),
+    inset 0 -1px 0 rgba(255, 255, 255, .12),
+    0 40px 90px -50px rgba(0, 0, 0, .9),
+    0 0 0 1px rgba(255, 255, 255, .06);
+}
+#page-header.full_page #site-subtitle { color: rgba(255, 255, 255, .92); }
+
 /* 滚动后吸顶的导航：整条变成悬浮玻璃条 */
 #page-header.nav-fixed #nav,
 #page-header.not-top-img #nav {
@@ -169,9 +193,9 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
   box-shadow: var(--lg-shadow), var(--lg-inner), var(--lg-halo);
   transition: transform .45s cubic-bezier(.22, .61, .36, 1), box-shadow .45s ease, border-color .45s ease;
 }
-/* 卡片上的液态高光：跟随鼠标的柔和光斑（hover 时缓慢滑过） */
-#recent-posts .recent-post-item::after,
-#aside-content .card-widget::after {
+/* 卡片上的液态高光：悬停时浮出柔和光斑 */
+#recent-posts .recent-post-item::before,
+#aside-content .card-widget::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -191,8 +215,8 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
     inset 0 1px 0 rgba(255, 255, 255, 1),
     inset 0 0 34px -16px rgba(255, 255, 255, 1);
 }
-#recent-posts .recent-post-item:hover::after,
-#aside-content .card-widget:hover::after { opacity: 1; }
+#recent-posts .recent-post-item:hover::before,
+#aside-content .card-widget:hover::before { opacity: 1; }
 #recent-posts .recent-post-item:hover { transform: translateY(-3px); }
 #recent-posts .recent-post-item > *,
 #aside-content .card-widget > * { position: relative; z-index: 1; }
@@ -376,6 +400,60 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
   }
 }
 
+/* ---------- 11. 液态动效 ---------- */
+@property --lg-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* 悬停时沿卡片边缘游走的一圈高光 */
+#recent-posts .recent-post-item::after,
+#aside-content .card-widget::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: conic-gradient(
+    from var(--lg-angle),
+    transparent 0 46%,
+    rgba(255, 255, 255, .98) 56%,
+    rgba(96, 172, 232, .95) 67%,
+    rgba(156, 124, 232, .9) 75%,
+    transparent 87%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  transition: opacity .5s ease;
+}
+#recent-posts .recent-post-item:hover::after,
+#aside-content .card-widget:hover::after {
+  opacity: .95;
+  animation: lg-orbit 4.5s linear infinite;
+}
+@keyframes lg-orbit { to { --lg-angle: 360deg; } }
+
+/* 入场：整页淡入，卡片依次浮起（backwards 保证结束后不覆盖悬停位移） */
+@keyframes lg-fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes lg-rise {
+  from { opacity: 0; transform: translateY(14px) }
+  to { opacity: 1; transform: none }
+}
+#content-inner { animation: lg-fade .45s ease-out backwards; }
+#recent-posts .recent-post-item,
+#aside-content .card-widget { animation: lg-rise .55s cubic-bezier(.22, .61, .36, 1) backwards; }
+#recent-posts .recent-post-item:nth-child(2) { animation-delay: .06s; }
+#recent-posts .recent-post-item:nth-child(3) { animation-delay: .12s; }
+#recent-posts .recent-post-item:nth-child(4) { animation-delay: .18s; }
+#aside-content .card-widget:nth-child(3) { animation-delay: .06s; }
+#aside-content .card-widget:nth-child(4) { animation-delay: .12s; }
+#aside-content .card-widget:nth-child(5) { animation-delay: .18s; }
+
 /* ---------- 9. 暗色主题（当前关闭，但保持同一套玻璃语言） ---------- */
 [data-theme="dark"] { --lg-ink: #dbe7ef; }
 html[data-theme="dark"] { background: #10171e; }
@@ -424,6 +502,13 @@ html[data-theme="dark"] { background: #10171e; }
     backdrop-filter: blur(12px) saturate(150%);
   }
   #post .post-copyright { padding: 15px 32px 15px 15px; font-size: 14px; }
+  #page-header.full_page #site-info {
+    width: min(94vw, 560px);
+    padding: 22px 22px 26px;
+    border-radius: 22px;
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+  }
   #footer { margin-top: 12px; }
   #footer .footer-other { padding: 30px 16px; }
 }
@@ -450,4 +535,9 @@ html[data-theme="dark"] { background: #10171e; }
     background: #f7fafc;
   }
   body::before { animation: none; }
+  #page-header.full_page #site-info {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(22, 32, 44, .58);
+  }
 }
