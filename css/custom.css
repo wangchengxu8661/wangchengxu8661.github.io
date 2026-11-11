@@ -105,10 +105,11 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
   z-index: 1;
   content: "";
   pointer-events: none;
+  /* 只压暗顶部（导航可读）和底部（标题区），中间尽量保留原图清晰度 */
   background:
-    linear-gradient(180deg, rgba(12, 16, 30, .55), transparent 120px),
-    linear-gradient(0deg, rgba(18, 40, 58, .42), transparent 46%),
-    rgba(14, 17, 32, .14);
+    linear-gradient(180deg, rgba(12, 16, 30, .52), transparent 110px),
+    linear-gradient(0deg, rgba(18, 40, 58, .26), transparent 42%),
+    rgba(14, 17, 32, .05);
 }
 #page-header :is(#site-info, #scroll-down, #page-site-info, #post-info) { z-index: 2; }
 /* 头图底缘的一道返光，作为玻璃与照片的接缝 */
@@ -137,7 +138,12 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
 #page-header.full_page #site-title,
 #page-header.full_page #site-subtitle { text-shadow: 0 2px 16px rgba(0, 0, 0, .6); }
 #page-header #site-title { letter-spacing: 1px; }
-#page-header #site-subtitle { margin-top: 12px; font-size: 1.2em; }
+#page-header #site-subtitle {
+  margin-top: 12px;
+  font-size: 1.2em;
+  /* 遮罩变浅后，副标题靠自身阴影保住对比度 */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .85), 0 2px 18px rgba(0, 0, 0, .55);
+}
 
 /* 顶部导航：栏目做成一块玻璃胶囊（头图上为烟玻璃，滚动后融进浅玻璃导航条）
    仅桌面端生效——移动端的 #menus 由主题折叠成抽屉，不能强制成 flex */
@@ -465,6 +471,88 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
 #aside-content .card-widget:nth-child(3) { animation-delay: .06s; }
 #aside-content .card-widget:nth-child(4) { animation-delay: .12s; }
 #aside-content .card-widget:nth-child(5) { animation-delay: .18s; }
+
+/* ---------- 12. 开屏加载层 ---------- */
+html.ol-lock,
+html.ol-lock body { overflow: hidden; }
+
+#open-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  transition: opacity .6s ease, transform .6s ease;
+}
+#open-loader.ol-done {
+  opacity: 0;
+  transform: scale(1.015);
+  pointer-events: none;
+}
+/* 背景用头图本身：既是遮罩，也顺手把首屏大图预热了 */
+.ol-bg {
+  position: absolute;
+  inset: -4%;
+  background: url("/img/hero-mika.webp") center/cover no-repeat, #0d141c;
+  filter: saturate(108%) brightness(1.02);
+  transform: scale(1.04);
+}
+.ol-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(62% 52% at 50% 44%, rgba(8, 14, 22, .3), rgba(8, 14, 22, .78) 72%),
+    linear-gradient(180deg, rgba(6, 12, 20, .5), rgba(6, 12, 20, .18) 42%, rgba(6, 12, 20, .74));
+}
+.ol-panel {
+  position: relative;
+  width: min(84vw, 380px);
+  padding: 30px 34px 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: linear-gradient(150deg, rgba(26, 40, 56, .52), rgba(13, 22, 34, .32));
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .08),
+    0 40px 90px -50px rgba(0, 0, 0, .95);
+  color: #eef5fb;
+  text-align: center;
+}
+.ol-title {
+  margin: 0 0 20px;
+  font-size: 1.15em;
+  letter-spacing: .16em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .6);
+}
+.ol-track {
+  position: relative;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .18);
+  overflow: hidden;
+}
+.ol-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(148, 205, 246, .95), #fff 62%, rgba(176, 224, 255, .95));
+  box-shadow: 0 0 14px rgba(160, 214, 255, .85);
+  transition: width .28s cubic-bezier(.22, .61, .36, 1);
+}
+.ol-meta {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 2px 0;
+  font-size: 12px;
+  letter-spacing: .08em;
+  color: rgba(235, 245, 252, .74);
+}
+.ol-percent { font-variant-numeric: tabular-nums; }
 
 /* ---------- 9. 暗色主题（当前关闭，但保持同一套玻璃语言） ---------- */
 [data-theme="dark"] { --lg-ink: #dbe7ef; }
