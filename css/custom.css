@@ -493,7 +493,7 @@ html.ol-lock body { overflow: hidden; }
 .ol-bg {
   position: absolute;
   inset: -4%;
-  background: url("/img/hero-mika.webp") center/cover no-repeat, #0d141c;
+  background: url("/img/hero-mika-2k.webp") center/cover no-repeat, #0d141c;
   filter: saturate(108%) brightness(1.02);
   transform: scale(1.04);
 }

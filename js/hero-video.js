@@ -48,7 +48,7 @@ function startHeroVideo() {
   header.prepend(video);
   const compactViewport = window.matchMedia('(max-width: 600px)').matches;
   const compactVideo = header.classList.contains('full_page') ? 'hero-mika-mobile.mp4' : 'hero-mika-compact.mp4';
-  video.src = '/img/' + (compactViewport ? compactVideo : 'hero-mika.mp4');
+  video.src = '/img/' + (compactViewport ? compactVideo : 'hero-mika.mp4') + '?v=2k';
   viewportObserver.observe(header);
 }
 
