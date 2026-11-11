@@ -139,29 +139,41 @@ html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: th
 #page-header #site-title { letter-spacing: 1px; }
 #page-header #site-subtitle { margin-top: 12px; font-size: 1.2em; }
 
-/* 首页开屏：标题与副标题托在一块玻璃胶囊上 */
-#page-header.full_page #site-info {
-  top: 50%;
-  left: 50%;
-  width: max-content;
-  min-width: min(520px, 86vw);
-  max-width: 92vw;
-  padding: 26px 40px 30px;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 255, 255, .4);
-  border-radius: 30px;
-  background:
-    linear-gradient(150deg, rgba(16, 28, 44, .34) 0%, rgba(16, 28, 44, .16) 54%, rgba(16, 28, 44, .3) 100%),
-    linear-gradient(150deg, rgba(255, 255, 255, .16) 0%, rgba(255, 255, 255, .04) 60%);
-  -webkit-backdrop-filter: blur(18px) saturate(165%);
-  backdrop-filter: blur(18px) saturate(165%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .5),
-    inset 0 -1px 0 rgba(255, 255, 255, .12),
-    0 40px 90px -50px rgba(0, 0, 0, .9),
-    0 0 0 1px rgba(255, 255, 255, .06);
+/* 顶部导航：栏目做成一块玻璃胶囊（头图上为烟玻璃，滚动后融进浅玻璃导航条）
+   仅桌面端生效——移动端的 #menus 由主题折叠成抽屉，不能强制成 flex */
+@media screen and (min-width: 769px) {
+  #nav #menus .menus_items {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px 5px 4px;
+    border-radius: 999px;
+  }
+  #page-header:not(.nav-fixed):not(.not-top-img) #nav #menus .menus_items {
+    border: 1px solid rgba(255, 255, 255, .3);
+    background: linear-gradient(150deg, rgba(12, 24, 38, .42) 0%, rgba(12, 24, 38, .18) 100%);
+    -webkit-backdrop-filter: blur(16px) saturate(165%);
+    backdrop-filter: blur(16px) saturate(165%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .34),
+      inset 0 -1px 0 rgba(255, 255, 255, .1),
+      0 18px 42px -32px rgba(0, 0, 0, .85);
+  }
+  /* 悬停项在胶囊里浮出一小块高光 */
+  #page-header:not(.nav-fixed):not(.not-top-img) #nav .menus_item > a.site-page {
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: background-color .3s ease, color .3s ease;
+  }
+  #page-header:not(.nav-fixed):not(.not-top-img) #nav .menus_item:hover > a.site-page {
+    background: rgba(255, 255, 255, .16);
+  }
 }
-#page-header.full_page #site-subtitle { color: rgba(255, 255, 255, .92); }
+
+/* 769–900px：胶囊收紧一点，避免和站点标题挤在一起 */
+@media screen and (min-width: 769px) and (max-width: 900px) {
+  #nav #menus .menus_items { padding: 4px 10px 4px 2px; }
+  #page-header:not(.nav-fixed):not(.not-top-img) #nav .menus_item > a.site-page { padding: 3px 6px; }
+}
 
 /* 滚动后吸顶的导航：整条变成悬浮玻璃条 */
 #page-header.nav-fixed #nav,
@@ -502,13 +514,6 @@ html[data-theme="dark"] { background: #10171e; }
     backdrop-filter: blur(12px) saturate(150%);
   }
   #post .post-copyright { padding: 15px 32px 15px 15px; font-size: 14px; }
-  #page-header.full_page #site-info {
-    width: min(94vw, 560px);
-    padding: 22px 22px 26px;
-    border-radius: 22px;
-    -webkit-backdrop-filter: blur(14px) saturate(150%);
-    backdrop-filter: blur(14px) saturate(150%);
-  }
   #footer { margin-top: 12px; }
   #footer .footer-other { padding: 30px 16px; }
 }
@@ -535,9 +540,4 @@ html[data-theme="dark"] { background: #10171e; }
     background: #f7fafc;
   }
   body::before { animation: none; }
-  #page-header.full_page #site-info {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: rgba(22, 32, 44, .58);
-  }
 }
