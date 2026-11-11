@@ -1,101 +1,328 @@
-/* Preserve Butterfly's native header, post cards, sidebar and article layout. */
-:root { --accent: #52758b; --line: #e2e7ea; }
-html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+/* ============================================================================
+   Xur0n 博客 · Liquid Glass 样式层
+   磨砂玻璃 + 液态高光：半透明面板、背景模糊、边缘返光、缓慢流动的光斑。
+   仅覆盖视觉，不改动 Butterfly 的结构与交互逻辑。
+   ========================================================================= */
+
+/* ---------- 1. 设计令牌 ---------- */
+:root {
+  --accent: #52758b;
+  --accent-deep: #3d5d72;
+  --line: #e2e7ea;
+
+  /* 玻璃 */
+  --lg-blur: 26px;
+  --lg-blur-soft: 16px;
+  --lg-sat: 180%;
+  --lg-radius: 24px;
+  --lg-radius-sm: 14px;
+
+  /* 填充：三层叠加 = 冷色底 + 斜向高光 + 底部反光 */
+  --lg-fill:
+    linear-gradient(150deg, rgba(247, 252, 255, .6) 0%, rgba(233, 245, 253, .3) 48%, rgba(243, 250, 255, .48) 100%),
+    linear-gradient(118deg, rgba(255, 255, 255, .95) 0%, rgba(255, 255, 255, 0) 32%),
+    linear-gradient(0deg, rgba(196, 224, 242, .38), rgba(196, 224, 242, 0) 54%);
+  --lg-fill-strong:
+    linear-gradient(150deg, rgba(252, 254, 255, .84) 0%, rgba(240, 248, 254, .58) 52%, rgba(248, 252, 255, .74) 100%),
+    linear-gradient(118deg, rgba(255, 255, 255, .98) 0%, rgba(255, 255, 255, 0) 38%);
+
+  --lg-edge: rgba(255, 255, 255, .82);
+  --lg-hair: rgba(138, 176, 199, .3);
+  --lg-ink: #33495a;
+
+  --lg-shadow:
+    0 34px 78px -36px rgba(18, 48, 72, .58),
+    0 12px 30px -18px rgba(18, 48, 72, .3),
+    0 1px 2px rgba(24, 56, 80, .06);
+  --lg-inner:
+    inset 0 1px 0 rgba(255, 255, 255, .98),
+    inset 0 -1px 0 rgba(255, 255, 255, .45),
+    inset 0 0 30px -18px rgba(255, 255, 255, 1);
+  --lg-halo: 0 0 0 1px rgba(255, 255, 255, .3);
+}
+
+html { background: #edf3f8; scroll-behavior: smooth; scroll-padding-top: 24px; }
+
+/* ---------- 2. 环境光：玻璃背后要有东西可折射 ---------- */
 body {
+  position: relative;
+  background: transparent;
+  color: var(--font-color);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: -22vmax;
+  z-index: -1;
+  pointer-events: none;
   background:
-    radial-gradient(ellipse at 0 35%, rgba(154, 195, 216, .14), transparent 55%),
-    radial-gradient(ellipse at 100% 75%, rgba(183, 202, 218, .18), transparent 50%),
-    #f7f8fa;
+    radial-gradient(38vmax 34vmax at 12% 14%, rgba(104, 170, 214, .78), transparent 62%),
+    radial-gradient(34vmax 30vmax at 88% 8%, rgba(186, 146, 210, .66), transparent 64%),
+    radial-gradient(42vmax 38vmax at 80% 86%, rgba(104, 198, 184, .62), transparent 62%),
+    radial-gradient(30vmax 26vmax at 16% 92%, rgba(246, 188, 158, .52), transparent 66%),
+    linear-gradient(160deg, #f2f8fc 0%, #e8f1f8 46%, #e6f1f4 100%);
+  animation: lg-drift 42s ease-in-out infinite alternate;
 }
-a:focus-visible, button:focus-visible, summary:focus-visible {
-  outline: 2px solid var(--accent); outline-offset: 4px;
+/* 极细噪点，让大面积玻璃不至于"塑料感" */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+@keyframes lg-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(1.6%, -1.3%, 0) scale(1.05); }
+  100% { transform: translate3d(-1.8%, 1.5%, 0) scale(1.02); }
+}
+
+/* 焦点、选中、滚动条 */
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+::selection { background: rgba(82, 117, 139, .22); }
+html { scrollbar-color: rgba(82, 117, 139, .45) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 10px;
+  background-clip: content-box;
+  background-color: rgba(82, 117, 139, .38);
+}
+::-webkit-scrollbar-thumb:hover { background-color: rgba(61, 93, 114, .58); }
+
+/* ---------- 3. 页头与导航 ---------- */
 #page-header { background-color: #83a9bd; }
 #page-header.full_page { background-attachment: scroll; }
 #page-header:not(.not-top-img)::before {
-  position: absolute; inset: 0; z-index: 1; content: ""; pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: "";
+  pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(14, 17, 32, .58), transparent 110px),
-    rgba(14, 17, 32, .18);
+    linear-gradient(180deg, rgba(12, 16, 30, .55), transparent 120px),
+    linear-gradient(0deg, rgba(18, 40, 58, .42), transparent 46%),
+    rgba(14, 17, 32, .14);
 }
 #page-header :is(#site-info, #scroll-down, #page-site-info, #post-info) { z-index: 2; }
+/* 头图底缘的一道返光，作为玻璃与照片的接缝 */
+#page-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .85) 22%, rgba(255, 255, 255, .35) 55%, transparent);
+}
+
 .hero-video {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; opacity: 0; pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
 }
 .hero-video.is-ready { opacity: 1; }
 #page-header.full_page #site-title,
-#page-header.full_page #site-subtitle { text-shadow: 0 2px 8px rgba(0, 0, 0, .65); }
+#page-header.full_page #site-subtitle { text-shadow: 0 2px 16px rgba(0, 0, 0, .6); }
 #page-header #site-title { letter-spacing: 1px; }
 #page-header #site-subtitle { margin-top: 12px; font-size: 1.2em; }
-#recent-posts .recent-post-item, #aside-content .card-widget,
-.layout > #post, .layout > #page, .layout > #archive,
-.layout > #category, .layout > #tag {
-  border: 1px solid transparent;
-  border-radius: 18px;
-  /* Layered glass rim keeps large reading surfaces sharp without costly live blur. */
-  background:
-    linear-gradient(135deg, #ffffff 0%, #fbfdfe 65%, #f7fafc 100%) padding-box,
-    linear-gradient(135deg, #ffffff 0%, #d0e2ed 26%, #ffffff 48%, #bfd3e0 78%, #ffffff 100%) border-box;
+
+/* 滚动后吸顶的导航：整条变成悬浮玻璃条 */
+#page-header.nav-fixed #nav,
+#page-header.not-top-img #nav {
+  background: var(--lg-fill-strong);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  border-bottom: 1px solid var(--lg-edge);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .98),
-    inset 1px 0 0 rgba(255, 255, 255, .75),
-    inset -1px -1px 2px rgba(133, 169, 193, .16),
-    0 2px 4px rgba(69, 102, 124, .035),
-    0 12px 32px -12px rgba(69, 102, 124, .2),
-    0 0 0 4px rgba(255, 255, 255, .35);
+    0 16px 34px -26px rgba(20, 48, 68, .6),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -1px 0 rgba(255, 255, 255, .5);
 }
+#page-header.nav-fixed #nav .site-name,
+#page-header.nav-fixed #nav span.site-page,
+#page-header.not-top-img #nav .site-name,
+#page-header.not-top-img #nav span.site-page { color: var(--lg-ink); }
+
+/* ---------- 4. 玻璃面板：卡片 / 文章 / 侧栏 ---------- */
+#recent-posts .recent-post-item,
+#aside-content .card-widget,
+.layout > :is(#post, #page, #archive, #category, #tag) {
+  position: relative;
+  border: 1px solid var(--lg-edge);
+  border-radius: var(--lg-radius);
+  background: var(--lg-fill);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  box-shadow: var(--lg-shadow), var(--lg-inner), var(--lg-halo);
+  transition: transform .45s cubic-bezier(.22, .61, .36, 1), box-shadow .45s ease, border-color .45s ease;
+}
+/* 卡片上的液态高光：跟随鼠标的柔和光斑（hover 时缓慢滑过） */
+#recent-posts .recent-post-item::after,
+#aside-content .card-widget::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(60% 80% at 20% 0%, rgba(255, 255, 255, .85), transparent 70%);
+  transition: opacity .5s ease;
+}
+#recent-posts .recent-post-item:hover,
+#aside-content .card-widget:hover {
+  border-color: rgba(255, 255, 255, .95);
+  box-shadow:
+    0 36px 74px -34px rgba(20, 52, 74, .55),
+    0 12px 26px -16px rgba(20, 52, 74, .3),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 0 34px -16px rgba(255, 255, 255, 1);
+}
+#recent-posts .recent-post-item:hover::after,
+#aside-content .card-widget:hover::after { opacity: 1; }
+#recent-posts .recent-post-item:hover { transform: translateY(-3px); }
+#recent-posts .recent-post-item > *,
+#aside-content .card-widget > * { position: relative; z-index: 1; }
+
+/* 正文容器：玻璃更"厚"，保证长时间阅读的对比度 */
+.layout > :is(#post, #page, #archive, #category, #tag) {
+  --lg-fill:
+    linear-gradient(160deg, rgba(250, 253, 255, .8) 0%, rgba(234, 245, 253, .58) 48%, rgba(244, 250, 255, .7) 100%),
+    linear-gradient(0deg, rgba(196, 224, 242, .22), rgba(196, 224, 242, 0) 60%);
+  -webkit-backdrop-filter: blur(var(--lg-blur-soft)) saturate(160%) brightness(1.02);
+  backdrop-filter: blur(var(--lg-blur-soft)) saturate(160%) brightness(1.02);
+}
+
 #article-container { overflow-wrap: break-word; }
 /* Intrinsic width/height attributes come from scripts/optimize-output.mjs; keep them fluid. */
 #article-container img[width][height] { height: auto; max-width: 100%; }
-/* Article attribution card, using Butterfly's built-in copyright content. */
+
+/* 文内小玻璃件：引用、代码、表格、附件卡 */
+#article-container blockquote {
+  position: relative;
+  border: 0;
+  border-left: 4px solid #5a8aa8;
+  border-radius: 4px 14px 14px 4px;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, .78), rgba(226, 238, 246, .58));
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 12px 26px -22px rgba(24, 56, 80, .55);
+  color: #40596b;
+}
+/* 代码块：只在外层容器做玻璃，内部 pre/td 全部去掉边框与圆角，避免"框中框" */
+#article-container figure.highlight {
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: var(--lg-radius-sm);
+  background: rgba(255, 255, 255, .5);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 16px 34px -28px rgba(20, 48, 68, .6);
+}
+#article-container figure.highlight pre,
+#article-container figure.highlight table,
+#article-container figure.highlight td,
+#article-container figure.highlight th,
+#article-container figure.highlight .gutter pre,
+#article-container figure.highlight .code pre {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+#article-container > pre,
+#article-container .code-wrap {
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: var(--lg-radius-sm);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 14px 30px -26px rgba(20, 48, 68, .55);
+}
+#article-container table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid rgba(255, 255, 255, .75);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .55), 0 16px 30px -26px rgba(20, 48, 68, .55);
+}
+#article-container table tr:nth-child(2n) { background: rgba(255, 255, 255, .45); }
+
+/* 版权卡：玻璃 + 更细的边 */
 #post .post-copyright {
   margin: 36px 0 20px;
   padding: 18px 42px 18px 22px;
-  border: 1px solid #a9bac5;
-  border-radius: 9px;
-  background: var(--card-bg, #fff);
-  box-shadow: 0 0 8px rgba(82, 117, 139, .2);
+  border: 1px solid rgba(255, 255, 255, .8);
+  border-radius: var(--lg-radius-sm);
+  background: var(--lg-fill-strong);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  backdrop-filter: blur(14px) saturate(170%);
+  box-shadow: 0 18px 40px -30px rgba(20, 48, 68, .55), inset 0 1px 0 rgba(255, 255, 255, .95);
   line-height: 1.9;
   overflow-wrap: anywhere;
+  transition: box-shadow .4s ease, transform .4s cubic-bezier(.22, .61, .36, 1);
 }
 #post .post-copyright > div + div { margin-top: 5px; }
 #post .post-copyright::before { top: 12px; right: 15px; color: #49b1f5; }
-#post .post-copyright .post-copyright-meta { color: #1686bf; }
+#post .post-copyright .post-copyright-meta { color: #1477a8; }
 #post .post-copyright .post-copyright-info { padding-left: 8px; }
 #post .post-copyright a { text-underline-offset: 3px; }
-#post .post-copyright:hover {
-  box-shadow: 0 0 12px rgba(82, 117, 139, .3);
-}
-[data-theme="dark"] #post .post-copyright {
-  border-color: #a5a5a5;
-  box-shadow: 0 0 8px rgba(255, 255, 255, .25);
-}
-[data-theme="dark"] #post .post-copyright .post-copyright-meta { color: #49b1f5; }
+#post .post-copyright:hover { transform: translateY(-2px); box-shadow: 0 24px 48px -30px rgba(20, 48, 68, .6), inset 0 1px 0 rgba(255, 255, 255, 1); }
 #post .post-meta__tags { border-radius: 16px; }
-@media (max-width: 600px) {
-  #post .post-copyright { padding: 15px 32px 15px 15px; font-size: 14px; }
+
+/* ---------- 5. 按钮与分页：小号玻璃胶囊 ---------- */
+#rightside > div > button,
+#rightside > div > a,
+#pagination .page-number,
+#pagination .extend,
+#article-container figure.highlight button.copy-button {
+  border: 1px solid var(--lg-edge);
+  background: var(--lg-fill-strong);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(180%);
+  box-shadow: 0 12px 26px -20px rgba(20, 48, 68, .6), inset 0 1px 0 rgba(255, 255, 255, .95);
+  color: var(--lg-ink);
+  transition: transform .3s cubic-bezier(.22, .61, .36, 1), box-shadow .3s ease, background-color .3s ease;
+}
+#rightside > div > button:hover,
+#rightside > div > a:hover,
+#pagination .page-number:hover,
+#pagination .extend:hover { transform: translateY(-2px); box-shadow: 0 18px 34px -20px rgba(20, 48, 68, .7), inset 0 1px 0 rgba(255, 255, 255, 1); }
+#pagination .page-number { border-radius: 12px; }
+#pagination .page-number.current {
+  background: linear-gradient(150deg, rgba(82, 117, 139, .92), rgba(61, 93, 114, .86));
+  color: #fff;
+  border-color: rgba(255, 255, 255, .7);
 }
 #article-container figure.highlight button.copy-button {
-  border: 0; background: transparent; color: inherit; cursor: pointer;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
 }
-.pdf-attachment { margin: 24px 0; }
-.pdf-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-#article-container .pdf-actions a {
-  display: inline-block; padding: 10px 20px; border-radius: 6px;
-  background: #52758b; color: #fff; text-decoration: none;
-}
-#article-container .pdf-actions a:last-child { background: #edf2f5; color: #3d5d72; }
-#article-container .pdf-note { margin: 14px 0; font-size: 13px; color: #71808a; }
-/* Footer uses the actual Butterfly 5.7 footer children, not the old footer-wrap id. */
+
+/* ---------- 6. 页脚 ---------- */
 #footer {
-  margin-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, .95);
+  position: relative;
+  margin-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, .85);
   background:
-    radial-gradient(ellipse at 18% 100%, rgba(145, 186, 210, .28), transparent 60%),
-    radial-gradient(ellipse at 85% 0, rgba(212, 226, 237, .65), transparent 55%),
-    linear-gradient(165deg, #edf3f7, #e3edf3 65%, #dce8ef);
-  box-shadow: inset 0 1px 0 rgba(166, 193, 210, .25);
+    linear-gradient(180deg, rgba(255, 255, 255, .58), rgba(255, 255, 255, .3) 60%, rgba(226, 238, 246, .5)),
+    linear-gradient(90deg, rgba(206, 228, 242, .35), rgba(226, 214, 236, .28));
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 -20px 60px -40px rgba(20, 48, 68, .5);
 }
 #footer::before {
   content: "";
@@ -104,36 +331,123 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   left: 15%;
   width: 70%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(111, 155, 182, .55), transparent);
   pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .95), transparent);
 }
-#footer .footer-other { padding: 38px 20px 32px; color: #425b6b; line-height: 1.9; }
+#footer .footer-other { padding: 38px 20px 32px; color: #3c556a; line-height: 1.9; }
 #footer .copyright { font-weight: 600; letter-spacing: .04em; }
-#footer .framework-info { margin-top: 4px; font-size: 13px; color: #526d7e; }
-#footer a { color: #385e76; text-underline-offset: 4px; }
-#footer a:hover { color: #174b6d; text-decoration: underline; }
-#footer .footer_custom_text { margin-top: 12px; color: #526d7e; font-size: 14px; letter-spacing: .1em; }
-[data-theme="dark"] body { background: #161d24; }
+#footer .framework-info { margin-top: 4px; font-size: 13px; color: #4d6878; }
+#footer a { color: #33586f; text-underline-offset: 4px; }
+#footer a:hover { color: #123f5c; text-decoration: underline; }
+#footer .footer_custom_text { margin-top: 12px; color: #4d6878; font-size: 14px; letter-spacing: .1em; }
+
+/* ---------- 7. 附件与提示 ---------- */
+.pdf-attachment { margin: 24px 0; }
+.pdf-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+#article-container .pdf-actions a {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  background: linear-gradient(150deg, rgba(82, 117, 139, .95), rgba(61, 93, 114, .9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 14px 28px -22px rgba(20, 48, 68, .8);
+  color: #fff;
+  text-decoration: none;
+}
+#article-container .pdf-actions a:last-child {
+  background: var(--lg-fill-strong);
+  color: var(--lg-ink);
+  border-color: var(--lg-edge);
+}
+#article-container .pdf-note { margin: 14px 0; font-size: 13px; color: #64798a; }
+
+/* ---------- 8. 降级：不支持背景模糊时保持可读 ---------- */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  #recent-posts .recent-post-item,
+  #aside-content .card-widget,
+  .layout > :is(#post, #page, #archive, #category, #tag),
+  #footer,
+  #page-header.nav-fixed #nav,
+  #page-header.not-top-img #nav,
+  #post .post-copyright,
+  #pagination .page-number,
+  #rightside > div > button {
+    background: rgba(255, 255, 255, .94);
+  }
+}
+
+/* ---------- 9. 暗色主题（当前关闭，但保持同一套玻璃语言） ---------- */
+[data-theme="dark"] { --lg-ink: #dbe7ef; }
+html[data-theme="dark"] { background: #10171e; }
+[data-theme="dark"] body::before {
+  background:
+    radial-gradient(36vmax 32vmax at 14% 16%, rgba(46, 92, 124, .55), transparent 62%),
+    radial-gradient(32vmax 28vmax at 86% 10%, rgba(96, 66, 118, .45), transparent 64%),
+    radial-gradient(40vmax 36vmax at 78% 84%, rgba(38, 96, 91, .42), transparent 62%),
+    linear-gradient(160deg, #141c24 0%, #101820 60%, #0d141a 100%);
+}
 [data-theme="dark"] #recent-posts .recent-post-item,
 [data-theme="dark"] #aside-content .card-widget,
 [data-theme="dark"] .layout > :is(#post, #page, #archive, #category, #tag) {
-  background:
-    linear-gradient(135deg, #242f39, #1d2730) padding-box,
-    linear-gradient(135deg, #6d8596, #303f4d 35%, #526d80 75%, #283845) border-box;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 12px 30px -12px rgba(0, 0, 0, .5);
+  --lg-fill: linear-gradient(150deg, rgba(48, 64, 78, .72), rgba(28, 40, 50, .58));
+  --lg-fill-strong: linear-gradient(150deg, rgba(58, 76, 92, .82), rgba(32, 46, 58, .7));
+  --lg-edge: rgba(255, 255, 255, .16);
+  --lg-shadow: 0 30px 64px -34px rgba(0, 0, 0, .85), 0 10px 26px -18px rgba(0, 0, 0, .6);
+  --lg-inner: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 -1px 0 rgba(255, 255, 255, .06);
 }
-[data-theme="dark"] #footer { background: linear-gradient(150deg, #233340, #192732); }
-[data-theme="dark"] #footer :is(.footer-other, .framework-info, .footer_custom_text, a) { color: #bccedb; }
+[data-theme="dark"] #footer {
+  background: linear-gradient(180deg, rgba(40, 56, 70, .7), rgba(24, 36, 46, .8));
+  border-top-color: rgba(255, 255, 255, .14);
+}
+[data-theme="dark"] #footer :is(.footer-other, .framework-info, .footer_custom_text, a) { color: #b9cbd9; }
+[data-theme="dark"] #page-header.nav-fixed #nav,
+[data-theme="dark"] #page-header.not-top-img #nav { border-bottom-color: rgba(255, 255, 255, .14); }
+[data-theme="dark"] #page-header.nav-fixed #nav :is(.site-name, span.site-page),
+[data-theme="dark"] #page-header.not-top-img #nav :is(.site-name, span.site-page) { color: #dbe7ef; }
+[data-theme="dark"] #post .post-copyright { border-color: rgba(255, 255, 255, .16); }
+[data-theme="dark"] #article-container blockquote {
+  background: linear-gradient(120deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .03));
+}
+
+/* ---------- 10. 移动端与低功耗偏好 ---------- */
 @media (max-width: 600px) {
   #page-header.full_page { background-position: 72% center; }
   #page-header.full_page .hero-video { object-position: 72% center; }
   .layout > :is(#post, #page, #archive, #category, #tag),
-  #recent-posts .recent-post-item, #aside-content .card-widget { border-radius: 12px; }
+  #recent-posts .recent-post-item,
+  #aside-content .card-widget { border-radius: 16px; }
+  /* 手机上降低模糊强度，减少 GPU 压力 */
+  #recent-posts .recent-post-item,
+  #aside-content .card-widget,
+  .layout > :is(#post, #page, #archive, #category, #tag) {
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(12px) saturate(150%);
+  }
+  #post .post-copyright { padding: 15px 32px 15px 15px; font-size: 14px; }
   #footer { margin-top: 12px; }
   #footer .footer-other { padding: 30px 16px; }
 }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    scroll-behavior: auto !important; transition: none !important; animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
   }
+}
+
+/* 系统开启"降低透明度"时，玻璃退化为接近实色 */
+@media (prefers-reduced-transparency: reduce) {
+  #recent-posts .recent-post-item,
+  #aside-content .card-widget,
+  .layout > :is(#post, #page, #archive, #category, #tag),
+  #footer,
+  #page-header.nav-fixed #nav,
+  #page-header.not-top-img #nav,
+  #post .post-copyright {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: #f7fafc;
+  }
+  body::before { animation: none; }
 }
