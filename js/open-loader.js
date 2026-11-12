@@ -19,7 +19,7 @@
     '<div class="ol-bg"></div>' +
     '<div class="ol-veil"></div>' +
     '<div class="ol-panel">' +
-    '<p class="ol-title">Xur0n 的博客</p>' +
+    '<p class="ol-title">Xur0nの小屋</p>' +
     '<div class="ol-track"><span class="ol-fill"></span></div>' +
     '<p class="ol-meta"><span class="ol-percent">0%</span><span class="ol-hint">正在布置画面</span></p>' +
     '</div>';
