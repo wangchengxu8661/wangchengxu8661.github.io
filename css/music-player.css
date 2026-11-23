@@ -1,0 +1,437 @@
+/* ============================================================================
+   侧边单曲播放器 · Liquid Glass
+   悬浮在页面右侧中部：收起时是一枚唱片按钮，展开是玻璃播放面板。
+   结构由 site/source/js/music-player.js 生成，这里只负责外观。
+   ========================================================================= */
+
+.mp {
+  --mp-accent: #52758b;
+  --mp-accent-deep: #3d5d72;
+  --mp-ink: #2f4555;
+  --mp-muted: #6b7f8c;
+  position: fixed;
+  top: 50%;
+  right: 18px;
+  z-index: 120;
+  transform: translateY(-50%);
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.mp *,
+.mp *::before,
+.mp *::after { box-sizing: border-box; }
+.mp__dock { position: relative; display: flex; align-items: center; }
+
+/* ---------- 收起状态：唱片按钮 ---------- */
+.mp__trigger {
+  position: relative;
+  display: block;
+  width: 58px;
+  height: 58px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .92);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .5);
+  box-shadow:
+    0 20px 40px -20px rgba(18, 48, 72, .65),
+    0 6px 16px -10px rgba(18, 48, 72, .4),
+    inset 0 1px 0 rgba(255, 255, 255, .95);
+  cursor: pointer;
+  transition: transform .35s cubic-bezier(.22, .61, .36, 1), box-shadow .35s ease;
+}
+.mp__trigger:hover {
+  transform: translateY(-1px) scale(1.05);
+  box-shadow:
+    0 24px 44px -20px rgba(18, 48, 72, .72),
+    0 8px 18px -10px rgba(18, 48, 72, .45),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+.mp__trigger:active { transform: scale(.97); }
+.mp__trigger:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: 4px; }
+
+.mp__disc {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #1b3240;
+}
+.mp__disc img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mp__disc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(150deg, rgba(255, 255, 255, .25), transparent 42%, rgba(10, 24, 34, .3));
+}
+
+.mp__badge {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .9);
+  border-radius: 50%;
+  background: linear-gradient(155deg, #6f95aa, #3d5d72);
+  color: #fff;
+  font-size: 9px;
+  box-shadow: 0 5px 12px -5px rgba(18, 48, 72, .8);
+}
+.mp__badge > i { line-height: 1; }
+.mp__bars { display: none; align-items: flex-end; gap: 2px; height: 11px; }
+.mp__bars i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-radius: 2px;
+  background: #fff;
+  transform-origin: bottom;
+  animation: mp-eq .9s ease-in-out infinite;
+}
+.mp__bars i:nth-child(1) { height: 46%; animation-delay: -.24s; }
+.mp__bars i:nth-child(2) { height: 100%; animation-delay: -.06s; }
+.mp__bars i:nth-child(3) { height: 64%; animation-delay: -.16s; }
+.mp[data-playing="true"] .mp__badge > i { display: none; }
+.mp[data-playing="true"] .mp__bars { display: flex; }
+
+.mp__pulse {
+  position: absolute;
+  inset: -7px;
+  border: 1px solid rgba(82, 117, 139, .35);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: mp-ping 5.6s ease-out infinite;
+}
+.mp[data-open="true"] .mp__pulse,
+.mp[data-playing="true"] .mp__pulse { display: none; }
+
+/* 播放时沿着按钮转一圈的细光环 */
+.mp__trigger::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  opacity: 0;
+  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0), rgba(82, 117, 139, .85), rgba(255, 255, 255, 0) 42%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  animation: mp-spin 3.6s linear infinite;
+  transition: opacity .3s ease;
+}
+.mp[data-playing="true"] .mp__trigger::before { opacity: 1; }
+
+/* ---------- 展开面板 ---------- */
+.mp__panel {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 16px);
+  width: 304px;
+  padding: 16px 16px 14px;
+  border: 1px solid rgba(255, 255, 255, .9);
+  border-radius: 24px;
+  background:
+    linear-gradient(155deg, rgba(252, 254, 255, .9), rgba(236, 246, 253, .74) 52%, rgba(246, 251, 255, .86)),
+    linear-gradient(0deg, rgba(196, 224, 242, .3), rgba(196, 224, 242, 0) 60%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  box-shadow:
+    0 34px 76px -34px rgba(18, 48, 72, .65),
+    0 12px 30px -18px rgba(18, 48, 72, .35),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 255, 255, .55);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(16px, -50%) scale(.96);
+  transform-origin: right center;
+  transition: opacity .28s ease, transform .38s cubic-bezier(.22, .61, .36, 1), visibility .38s;
+}
+.mp[data-open="true"] .mp__panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(0, -50%) scale(1);
+}
+
+.mp__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.mp__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--mp-muted);
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.mp__tag i { color: #7fa3b6; font-size: 11px; }
+.mp__close {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(82, 117, 139, .16);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .55);
+  color: var(--mp-accent);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background .25s, color .25s, transform .25s;
+}
+.mp__close:hover { background: var(--mp-accent); color: #fff; transform: translateX(1px); }
+.mp__close:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: 2px; }
+
+.mp__art {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #1b3240;
+  box-shadow:
+    0 22px 42px -24px rgba(18, 48, 72, .8),
+    0 6px 18px -12px rgba(18, 48, 72, .45);
+}
+.mp__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.001);
+  transition: transform 8s cubic-bezier(.2, .6, .3, 1);
+}
+.mp[data-playing="true"] .mp__art img { transform: scale(1.045); }
+.mp__art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .22), transparent 38%, transparent 72%, rgba(255, 255, 255, .1));
+}
+
+.mp__meta { margin: 14px 2px 0; }
+.mp__title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--mp-ink);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mp__sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 5px 0 0;
+  color: var(--mp-muted);
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+.mp__dot { opacity: .5; }
+
+.mp__seek {
+  margin: 14px 0 0;
+  padding: 8px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: none;
+}
+.mp__seek:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: 2px; }
+.mp__rail {
+  position: relative;
+  display: block;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(82, 117, 139, .16);
+}
+.mp__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--mp-progress, 0%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8fb6c9, #52758b);
+}
+.mp__knob {
+  position: absolute;
+  top: 50%;
+  left: var(--mp-progress, 0%);
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: 2px solid var(--mp-accent);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(18, 48, 72, .35);
+  transition: transform .2s ease;
+}
+.mp__seek:hover .mp__knob,
+.mp__seek:focus-visible .mp__knob { transform: scale(1.18); }
+
+.mp__time {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 2px 0;
+  color: var(--mp-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+
+.mp__controls { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.mp__play {
+  position: relative;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(155deg, #6a90a6, #3d5d72);
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow:
+    0 14px 26px -12px rgba(61, 93, 114, .9),
+    inset 0 1px 0 rgba(255, 255, 255, .35);
+  transition: transform .25s, box-shadow .25s, filter .25s;
+}
+.mp__play:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.08);
+  box-shadow:
+    0 18px 30px -12px rgba(61, 93, 114, .95),
+    inset 0 1px 0 rgba(255, 255, 255, .4);
+}
+.mp__play:active { transform: translateY(0) scale(.96); }
+.mp__play:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: 3px; }
+.mp__play i { margin-left: 2px; }
+.mp__play[data-state="playing"] i { margin-left: 0; }
+.mp[data-loading="true"] .mp__play i { animation: mp-beat .9s ease-in-out infinite; }
+
+.mp__vol { display: flex; flex: 1 1 auto; align-items: center; gap: 9px; min-width: 0; }
+.mp__mute {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--mp-accent);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color .2s, transform .2s;
+}
+.mp__mute:hover { color: var(--mp-accent-deep); transform: scale(1.08); }
+.mp__mute:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: 2px; }
+
+.mp__volume {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 14px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.mp__volume::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #8fb6c9 var(--mp-volume, 70%), rgba(82, 117, 139, .18) var(--mp-volume, 70%));
+}
+.mp__volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
+  border: 2px solid var(--mp-accent);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(18, 48, 72, .3);
+}
+.mp__volume::-moz-range-track { height: 4px; border-radius: 99px; background: rgba(82, 117, 139, .18); }
+.mp__volume::-moz-range-progress { height: 4px; border-radius: 99px; background: #8fb6c9; }
+.mp__volume::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--mp-accent);
+  border-radius: 50%;
+  background: #fff;
+}
+.mp__volume:focus-visible { border-radius: 99px; outline: 2px solid var(--mp-accent); outline-offset: 2px; }
+
+.mp__hint {
+  margin: 14px 0 0;
+  padding-top: 11px;
+  border-top: 1px solid rgba(82, 117, 139, .12);
+  color: rgba(82, 117, 139, .72);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: .04em;
+  text-align: center;
+}
+.mp__error {
+  margin: 10px 0 0;
+  color: #a85454;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+.mp__error[hidden] { display: none; }
+
+/* ---------- 动效 ---------- */
+@keyframes mp-eq {
+  0%, 100% { transform: scaleY(.45); }
+  50% { transform: scaleY(1); }
+}
+@keyframes mp-ping {
+  0%, 62% { opacity: 0; transform: scale(.9); }
+  70% { opacity: .7; }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+@keyframes mp-spin { to { transform: rotate(360deg); } }
+@keyframes mp-beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(.86); }
+}
+
+/* ---------- 窄屏与矮屏 ---------- */
+@media (max-width: 768px) {
+  .mp { right: 10px; }
+  .mp__trigger { width: 50px; height: 50px; }
+  .mp__badge { width: 21px; height: 21px; }
+  .mp__panel {
+    right: calc(100% + 12px);
+    width: min(276px, calc(100vw - 88px));
+    padding: 13px;
+    border-radius: 20px;
+  }
+  .mp__title { font-size: 17px; }
+  .mp__play { width: 46px; height: 46px; }
+  .mp__hint { font-size: 10px; }
+}
+@media (max-height: 680px) {
+  .mp__panel { max-height: calc(100vh - 24px); overflow-y: auto; overscroll-behavior: contain; }
+  .mp__art { max-width: 196px; margin-inline: auto; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .mp__panel { background: #f7fafc; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .mp__trigger { background: #eef4f8; }
+}
