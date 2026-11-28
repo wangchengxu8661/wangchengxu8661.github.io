@@ -168,6 +168,13 @@
   text-transform: uppercase;
 }
 .mp__tag i { color: #7fa3b6; font-size: 11px; }
+.mp__count {
+  margin-left: 2px;
+  color: var(--mp-accent);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
 .mp__close {
   display: grid;
   place-items: center;
@@ -286,7 +293,25 @@
   letter-spacing: .04em;
 }
 
-.mp__controls { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.mp__controls { display: flex; align-items: center; gap: 9px; margin-top: 12px; }
+.mp__step {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(82, 117, 139, .16);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .5);
+  color: var(--mp-accent);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background .25s, color .25s, transform .25s;
+}
+.mp__step:hover { background: rgba(255, 255, 255, .85); color: var(--mp-accent-deep); transform: scale(1.06); }
+.mp__step:active { transform: scale(.96); }
+.mp__step:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: 2px; }
 .mp__play {
   position: relative;
   display: grid;
@@ -375,15 +400,63 @@
 }
 .mp__volume:focus-visible { border-radius: 99px; outline: 2px solid var(--mp-accent); outline-offset: 2px; }
 
-.mp__hint {
+.mp__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 184px;
   margin: 14px 0 0;
-  padding-top: 11px;
+  padding: 10px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-top: 1px solid rgba(82, 117, 139, .12);
-  color: rgba(82, 117, 139, .72);
-  font-size: 11px;
-  line-height: 1.6;
+  list-style: none;
+}
+.mp__list li { display: block; }
+.mp__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--mp-ink);
+  font: inherit;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.mp__item:hover { background: rgba(255, 255, 255, .55); }
+.mp__item.is-current {
+  background: linear-gradient(90deg, rgba(82, 117, 139, .16), rgba(82, 117, 139, .04));
+  box-shadow: inset 2px 0 0 var(--mp-accent);
+}
+.mp__item:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: -2px; }
+.mp__num {
+  flex: 0 0 18px;
+  color: var(--mp-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
   letter-spacing: .04em;
-  text-align: center;
+}
+.mp__item.is-current .mp__num { color: var(--mp-accent); }
+.mp__item-title {
+  flex: 1 1 auto;
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mp__item.is-current .mp__item-title { color: var(--mp-accent-deep); font-weight: 600; }
+.mp__item-time {
+  flex: 0 0 auto;
+  color: var(--mp-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 .mp__error {
   margin: 10px 0 0;
@@ -422,10 +495,14 @@
     border-radius: 20px;
   }
   .mp__title { font-size: 17px; }
+  .mp__controls { gap: 7px; }
+  .mp__step { width: 30px; height: 30px; }
   .mp__play { width: 46px; height: 46px; }
-  .mp__hint { font-size: 10px; }
+  .mp__list { max-height: 172px; margin-top: 10px; padding-top: 8px; }
+  .mp__item { height: 30px; padding: 0 7px; }
+  .mp__item-title { font-size: 11px; }
 }
-@media (max-height: 680px) {
+@media (max-height: 760px) {
   .mp__panel { max-height: calc(100vh - 24px); overflow-y: auto; overscroll-behavior: contain; }
   .mp__art { max-width: 196px; margin-inline: auto; }
 }
