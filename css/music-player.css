@@ -10,10 +10,9 @@
   --mp-ink: #2f4555;
   --mp-muted: #6b7f8c;
   position: fixed;
-  top: 50%;
-  right: 18px;
+  left: 18px;
+  bottom: 18px;
   z-index: 120;
-  transform: translateY(-50%);
   font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
@@ -128,8 +127,8 @@
 /* ---------- 展开面板 ---------- */
 .mp__panel {
   position: absolute;
-  top: 50%;
-  right: calc(100% + 16px);
+  bottom: 0;
+  left: calc(100% + 16px);
   width: 304px;
   padding: 16px 16px 14px;
   border: 1px solid rgba(255, 255, 255, .9);
@@ -147,15 +146,15 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translate(16px, -50%) scale(.96);
-  transform-origin: right center;
+  transform: translateX(-14px) scale(.96);
+  transform-origin: left bottom;
   transition: opacity .28s ease, transform .38s cubic-bezier(.22, .61, .36, 1), visibility .38s;
 }
 .mp[data-open="true"] .mp__panel {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translate(0, -50%) scale(1);
+  transform: translateX(0) scale(1);
 }
 
 .mp__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -183,7 +182,7 @@
   cursor: pointer;
   transition: background .25s, color .25s, transform .25s;
 }
-.mp__close:hover { background: var(--mp-accent); color: #fff; transform: translateX(1px); }
+.mp__close:hover { background: var(--mp-accent); color: #fff; transform: translateX(-1px); }
 .mp__close:focus-visible { outline: 2px solid var(--mp-accent); outline-offset: 2px; }
 
 .mp__art {
@@ -413,11 +412,11 @@
 
 /* ---------- 窄屏与矮屏 ---------- */
 @media (max-width: 768px) {
-  .mp { right: 10px; }
+  .mp { left: 10px; bottom: 10px; }
   .mp__trigger { width: 50px; height: 50px; }
   .mp__badge { width: 21px; height: 21px; }
   .mp__panel {
-    right: calc(100% + 12px);
+    left: calc(100% + 12px);
     width: min(276px, calc(100vw - 88px));
     padding: 13px;
     border-radius: 20px;

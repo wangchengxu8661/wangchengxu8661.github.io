@@ -67,3 +67,16 @@ function enableKeyboardControls() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enableKeyboardControls);
 else enableKeyboardControls();
 window.addEventListener('load', enableKeyboardControls);
+// PJAX 切换文章后重新绑定复制按钮和导航键盘操作。
+window.addEventListener('pjax:complete', enableKeyboardControls);
+
+// PJAX 只应该接管 HTML 页面。下载和附件链接在捕获阶段拦下，绕过 PJAX，
+// 让浏览器按原方式下载或打开 PDF，避免把二进制文件当成页面解析。
+document.addEventListener('click', event => {
+  const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+  if (!link || link.hasAttribute('data-fancybox')) return;
+  const href = link.getAttribute('href') || '';
+  if (link.hasAttribute('download') || /\.(?:apk|pdf|pptx?|docx?|xlsx?|zip|rar|7z|tar|gz|mp3|mp4|webm|ogg|png|jpe?g|gif|webp|svg)(?:[?#]|$)/i.test(href)) {
+    event.stopPropagation();
+  }
+}, true);

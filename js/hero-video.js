@@ -1,9 +1,20 @@
 'use strict';
 
+/* 首页和分类页的头图循环视频。PJAX 切换页面后重建；离开这些页面时清理旧视频和监听。 */
+let stopHeroVideo = null;
+
 function startHeroVideo() {
+  if (stopHeroVideo) {
+    stopHeroVideo();
+    stopHeroVideo = null;
+  }
+
   const header = document.querySelector('#page-header:not(.not-top-img)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (!header || reducedMotion.matches) return;
+
+  // 只给首页（full_page）和分类页加视频；文章页、关于页、工具页保持静态头图。
+  if (!header.classList.contains('full_page') && !document.getElementById('category')) return;
 
   // Keep the static poster for data savers and slow connections; the video is decorative.
   const connection = navigator.connection || {};
@@ -32,14 +43,21 @@ function startHeroVideo() {
     syncPlayback();
   }, { threshold: playbackThreshold });
 
+  function cleanup() {
+    viewportObserver.disconnect();
+    document.removeEventListener('visibilitychange', syncPlayback);
+    reducedMotion.removeEventListener('change', syncPlayback);
+    video.pause();
+    video.remove();
+  }
+  stopHeroVideo = cleanup;
+
   video.addEventListener('playing', () => {
     video.classList.add('is-ready');
   }, { once: true });
   video.addEventListener('error', () => {
-    viewportObserver.disconnect();
-    document.removeEventListener('visibilitychange', syncPlayback);
-    reducedMotion.removeEventListener('change', syncPlayback);
-    video.remove();
+    cleanup();
+    if (stopHeroVideo === cleanup) stopHeroVideo = null;
   });
 
   document.addEventListener('visibilitychange', syncPlayback);
@@ -52,5 +70,6 @@ function startHeroVideo() {
   viewportObserver.observe(header);
 }
 
+window.addEventListener('pjax:complete', startHeroVideo);
 if (document.readyState === 'complete') startHeroVideo();
 else window.addEventListener('load', startHeroVideo, { once: true });

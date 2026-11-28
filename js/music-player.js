@@ -38,7 +38,7 @@ const TRACK = {
         <div class="mp__top">
           <span class="mp__tag"><i class="fas fa-compact-disc" aria-hidden="true"></i> 单曲循环</span>
           <button class="mp__close" type="button" aria-label="收起播放器" title="收起播放器">
-            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
           </button>
         </div>
 
