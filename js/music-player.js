@@ -117,7 +117,7 @@ const TRACKS = [
         <p class="mp__error" role="status" hidden></p>
       </section>
 
-      <audio class="mp__audio" preload="metadata" hidden></audio>
+      <audio class="mp__audio" preload="none" hidden></audio>
     </div>`;
   document.body.appendChild(root);
 
@@ -209,6 +209,7 @@ const TRACKS = [
   }
 
   function seekToClientX(clientX) {
+    if (!audio.getAttribute('src')) audio.src = track().src;
     const rail = seek.querySelector('.mp__rail');
     const rect = rail.getBoundingClientRect();
     const ratio = rect.width > 0 ? Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)) : 0;
@@ -280,6 +281,9 @@ const TRACKS = [
       return;
     }
     clearError();
+    if (!audio.getAttribute('src')) {
+      audio.src = track().src;
+    }
     root.dataset.loading = 'true';
     try {
       await audio.play();
@@ -327,8 +331,13 @@ const TRACKS = [
   function loadTrack(index, autoplay) {
     current = (index + TRACKS.length) % TRACKS.length;
     clearError();
-    audio.src = track().src;
-    audio.load();
+    if (autoplay) {
+      audio.src = track().src;
+      audio.load();
+    } else {
+      audio.pause();
+      audio.removeAttribute('src');
+    }
     paintTrack();
     paintPlayState();
     setupMediaSession();
